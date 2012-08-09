@@ -19,6 +19,13 @@ func (j *JsonCodec) EncodeRecord(record *Record) string {
 		"log_level" : record.level.name,
 	}
 
+	if record.data != nil {
+		// Notice: it is possible data overwrite other record
+		for k, v := range record.data {
+			hash[k] = v
+		}
+	}
+
 	bytes, err := json.Marshal(hash)
 	message := string(bytes)
 	if err != nil {
