@@ -4,12 +4,6 @@ import (
 	"log/syslog"
 )
 
-// FIXME: Fill the full map
-var levelMap = map[string]syslog.Priority{
-	"info":  syslog.LOG_INFO,
-	"debug": syslog.LOG_DEBUG,
-}
-
 type Syslog struct {
 	writer *syslog.Writer
 	codec Codec
@@ -29,8 +23,20 @@ func NewSyslogSink() *Syslog {
 func (s *Syslog) AddRecord(record *Record) {
 	msg := s.codec.EncodeRecord(record)
 
-	// FIXME: use info defaultly
-	s.writer.Info(msg)
+	switch record.level {
+	case LOG_FATAL:
+		s.writer.Crit(msg)
+	case LOG_ERROR:
+		s.writer.Err(msg)
+	case LOG_WARN:
+		s.writer.Warning(msg)
+	case LOG_INFO:
+		s.writer.Info(msg)
+	case LOG_DEBUG, LOG_DEBUG1, LOG_DEBUG2:
+		s.writer.Debug(msg)
+	default:
+		panic("Unknown log level: " + record.level.name)
+	}
 }
 
 func (s *Syslog) Flush() {
