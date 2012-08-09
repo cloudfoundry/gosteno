@@ -34,7 +34,7 @@ func NewLogger(name string) Logger {
 	return logger
 }
 
-func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string) {
+func (l BaseLogger) Log(level *LogLevel, message string, data map[string]string) {
 	if !l.active(level) {
 		return
 	}
@@ -47,35 +47,35 @@ func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string
 	}
 }
 
-func (l *BaseLogger) Fatal(message string) {
+func (l BaseLogger) Fatal(message string) {
 	l.Log(LOG_FATAL, message, nil)
 }
 
-func (l *BaseLogger) Error(message string) {
+func (l BaseLogger) Error(message string) {
 	l.Log(LOG_ERROR, message, nil)
 }
 
-func (l *BaseLogger) Warn(message string) {
+func (l BaseLogger) Warn(message string) {
 	l.Log(LOG_WARN, message, nil)
 }
 
-func (l *BaseLogger) Info(message string) {
+func (l BaseLogger) Info(message string) {
 	l.Log(LOG_INFO, message, nil)
 }
 
-func (l *BaseLogger) Debug(message string) {
+func (l BaseLogger) Debug(message string) {
 	l.Log(LOG_DEBUG, message, nil)
 }
 
-func (l *BaseLogger) Debug1(message string) {
+func (l BaseLogger) Debug1(message string) {
 	l.Log(LOG_DEBUG1, message, nil)
 }
 
-func (l *BaseLogger) Debug2(message string) {
+func (l BaseLogger) Debug2(message string) {
 	l.Log(LOG_DEBUG2, message, nil)
 }
 
-func (l *BaseLogger) active(level *LogLevel) bool {
+func (l BaseLogger) active(level *LogLevel) bool {
 	if l.level.priority >= level.priority {
 		return true
 	}
