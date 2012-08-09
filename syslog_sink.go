@@ -2,7 +2,6 @@ package steno
 
 import (
 	"log/syslog"
-	"fmt"
 )
 
 // FIXME: Fill the full map
@@ -13,6 +12,7 @@ var levelMap = map[string]syslog.Priority{
 
 type Syslog struct {
 	writer *syslog.Writer
+	codec Codec
 }
 
 func NewSyslogSink() *Syslog {
@@ -26,13 +26,21 @@ func NewSyslogSink() *Syslog {
 	return syslog
 }
 
-func (syslog *Syslog) AddRecord(record *Record) {
-	// TODO: unified format
-	msg := fmt.Sprintf("[%s] %s %s\n", record.timestamp, record.level.name, record.message)
+func (s *Syslog) AddRecord(record *Record) {
+	msg := s.codec.EncodeRecord(record)
+
 	// FIXME: use info defaultly
-	syslog.writer.Info(msg)
+	s.writer.Info(msg)
 }
 
-func (syslog *Syslog) Flush() {
+func (s *Syslog) Flush() {
 	// No impl.
+}
+
+func (s *Syslog) SetCodec(codec Codec) {
+	s.codec = codec
+}
+
+func (s *Syslog) GetCodec() Codec {
+	return s.codec
 }

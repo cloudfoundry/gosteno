@@ -3,11 +3,11 @@ package steno
 import (
 	"bufio"
 	"os"
-	"fmt"
 )
 
 type IO struct {
 	writer *bufio.Writer
+	codec Codec
 }
 
 func NewIOSink(file *os.File) *IO {
@@ -29,12 +29,19 @@ func NewFileSink(path string) *IO {
 }
 
 func (io *IO) AddRecord(record *Record) {
-	// TODO: unified format
-	msg := fmt.Sprintf("[%s] %s %s\n", record.timestamp, record.level.name, record.message)
+	msg := io.codec.EncodeRecord(record)
 	io.writer.WriteString(msg)
 }
 
 
 func (io *IO) Flush() {
 	io.writer.Flush()
+}
+
+func (io *IO) SetCodec(codec Codec) {
+	io.codec = codec
+}
+
+func (io *IO) GetCodec() Codec {
+	return io.codec
 }
