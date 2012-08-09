@@ -1,10 +1,10 @@
 package steno
 
 var config Config
-var loggers map[string]*Logger
+var loggers map[string]Logger
 
 func Init(c *Config) {
 	config = *c
 
-	loggers = make(map[string]*Logger)
+	loggers = make(map[string]Logger)
 }

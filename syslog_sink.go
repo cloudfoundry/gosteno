@@ -21,7 +21,7 @@ func NewSyslogSink() *Syslog {
 }
 
 func (s *Syslog) AddRecord(record *Record) {
-	msg := s.codec.EncodeRecord(record)
+	msg := string(s.codec.EncodeRecord(record))
 
 	switch record.level {
 	case LOG_FATAL:
