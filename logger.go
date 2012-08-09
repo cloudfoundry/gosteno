@@ -1,69 +1,81 @@
 package steno
 
-type Logger struct {
+type Logger interface {
+	Log(level *LogLevel, message string, data map[string]string)
+	Fatal(message string)
+	Error(message string)
+	Warn(message string)
+	Info(message string)
+	Debug(message string)
+	Debug1(message string)
+	Debug2(message string)
+}
+
+type BaseLogger struct {
 	name  string
 	sinks []Sink
 	level *LogLevel
 }
 
-func NewLogger(name string) *Logger {
+func NewLogger(name string) Logger {
 	logger := loggers[name]
 
 	if logger == nil {
-		logger = new(Logger)
+		baseLogger := new(BaseLogger)
 
-		logger.name = name
-		logger.sinks = config.sinks
-		logger.level = config.level
+		baseLogger.name = name
+		baseLogger.sinks = config.sinks
+		baseLogger.level = config.level
 
+		logger = baseLogger
 		loggers[name] = logger
 	}
 
 	return logger
 }
 
-func (l *Logger) Log(level *LogLevel, message string) {
+func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string) {
 	if !l.active(level) {
 		return
 	}
 
 	for _, sink := range l.sinks {
-		record := NewRecord(level, message)
+		record := NewRecord(level, message, data)
 
 		sink.AddRecord(record)
 		sink.Flush()
 	}
 }
 
-func (l *Logger) Fatal(message string) {
-	l.Log(LOG_FATAL, message)
+func (l *BaseLogger) Fatal(message string) {
+	l.Log(LOG_FATAL, message, nil)
 }
 
-func (l *Logger) Error(message string) {
-	l.Log(LOG_ERROR, message)
+func (l *BaseLogger) Error(message string) {
+	l.Log(LOG_ERROR, message, nil)
 }
 
-func (l *Logger) Warn(message string) {
-	l.Log(LOG_WARN, message)
+func (l *BaseLogger) Warn(message string) {
+	l.Log(LOG_WARN, message, nil)
 }
 
-func (l *Logger) Info(message string) {
-	l.Log(LOG_INFO, message)
+func (l *BaseLogger) Info(message string) {
+	l.Log(LOG_INFO, message, nil)
 }
 
-func (l *Logger) Debug(message string) {
-	l.Log(LOG_DEBUG, message)
+func (l *BaseLogger) Debug(message string) {
+	l.Log(LOG_DEBUG, message, nil)
 }
 
-func (l *Logger) Debug1(message string) {
-	l.Log(LOG_DEBUG1, message)
+func (l *BaseLogger) Debug1(message string) {
+	l.Log(LOG_DEBUG1, message, nil)
 }
 
-func (l *Logger) Debug2(message string) {
-	l.Log(LOG_DEBUG2, message)
+func (l *BaseLogger) Debug2(message string) {
+	l.Log(LOG_DEBUG2, message, nil)
 }
 
-func (l *Logger) active(level *LogLevel) bool {
+func (l *BaseLogger) active(level *LogLevel) bool {
 	if l.level.priority >= level.priority {
 		return true
 	}
