@@ -39,3 +39,7 @@ func NewLogLevel(name string, priority int) *LogLevel {
 func lookupLevel(name string) *LogLevel {
 	return LEVELS[name]
 }
+
+func (level *LogLevel) MarshalJSON() ([]byte, error) {
+	return []byte(level.name), nil
+}
