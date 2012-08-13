@@ -3,11 +3,13 @@ package steno
 import (
 	"bufio"
 	"os"
+	"fmt"
 )
 
 type IO struct {
 	writer *bufio.Writer
 	codec Codec
+	file *os.File
 }
 
 func NewIOSink(file *os.File) *IO {
@@ -15,6 +17,7 @@ func NewIOSink(file *os.File) *IO {
 
 	io := new(IO)
 	io.writer = writer
+	io.file = file
 
 	return io
 }
@@ -44,4 +47,9 @@ func (io *IO) SetCodec(codec Codec) {
 
 func (io *IO) GetCodec() Codec {
 	return io.codec
+}
+
+func (io *IO) MarshalJSON() ([]byte, error) {
+	msg := fmt.Sprintf("{\"type\": \"file\", \"file\": \"%s\"}", io.file.Name())
+	return []byte(msg), nil
 }

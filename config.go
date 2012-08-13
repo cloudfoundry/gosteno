@@ -4,9 +4,10 @@ type Config struct {
 	sinks []Sink
 	level *LogLevel
 	codec Codec
+	port int
 }
 
-func NewConfig(sinks []Sink, level string, codec Codec) *Config {
+func NewConfig(sinks []Sink, level string, codec Codec, port int) *Config {
 	var s = new(Config)
 
 	s.level = lookupLevel(level)
@@ -16,6 +17,7 @@ func NewConfig(sinks []Sink, level string, codec Codec) *Config {
 
 	s.sinks = sinks
 	s.codec = codec
+	s.port = port
 
 	for _, sink := range s.sinks {
 		sink.SetCodec(codec)

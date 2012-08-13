@@ -6,4 +6,6 @@ type Sink interface {
 
 	SetCodec(codec Codec)
 	GetCodec() Codec
+
+	MarshalJSON() ([]byte, error)
 }
