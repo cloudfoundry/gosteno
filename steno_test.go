@@ -7,7 +7,7 @@ import (
 
 func init() {
 	jsonCodec := NewJsonCodec()
-	config := NewConfig([]Sink{NewIOSink(os.Stdout)}, LOG_INFO.name, jsonCodec)
+	config := NewConfig([]Sink{NewIOSink(os.Stdout)}, LOG_INFO.name, jsonCodec, 8881)
 	Init(config)
 }
 
