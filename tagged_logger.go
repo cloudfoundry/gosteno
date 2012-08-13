@@ -1,5 +1,7 @@
 package steno
 
+import "fmt"
+
 type TaggedLogger struct {
 	proxyLogger Logger
 	data        map[string]string
@@ -59,4 +61,32 @@ func (l *TaggedLogger) Debug1(message string) {
 
 func (l *TaggedLogger) Debug2(message string) {
 	l.Log(LOG_DEBUG2, message, nil)
+}
+
+func (l *TaggedLogger) Fatalf(format string, a ...interface{}) {
+	l.Fatal(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Errorf(format string, a ...interface{}) {
+	l.Error(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Warnf(format string, a ...interface{}) {
+	l.Warn(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Infof(format string, a ...interface{}) {
+	l.Info(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Debugf(format string, a ...interface{}) {
+	l.Debug(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Debug1f(format string, a ...interface{}) {
+	l.Debug1(fmt.Sprintf(format, a...))
+}
+
+func (l *TaggedLogger) Debug2f(format string, a ...interface{}) {
+	l.Debug2(fmt.Sprintf(format, a...))
 }

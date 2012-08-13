@@ -1,5 +1,7 @@
 package steno
 
+import "fmt"
+
 type Logger interface {
 	Log(level *LogLevel, message string, data map[string]string)
 	Fatal(message string)
@@ -9,6 +11,14 @@ type Logger interface {
 	Debug(message string)
 	Debug1(message string)
 	Debug2(message string)
+
+	Fatalf(format string, a ...interface{})
+	Errorf(format string, a ...interface{})
+	Warnf(format string, a ...interface{})
+	Infof(format string, a ...interface{})
+	Debugf(format string, a ...interface{})
+	Debug1f(format string, a ...interface{})
+	Debug2f(format string, a ...interface{})
 }
 
 type BaseLogger struct {
@@ -73,6 +83,34 @@ func (l *BaseLogger) Debug1(message string) {
 
 func (l *BaseLogger) Debug2(message string) {
 	l.Log(LOG_DEBUG2, message, nil)
+}
+
+func (l *BaseLogger) Fatalf(format string, a ...interface{}) {
+	l.Fatal(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Errorf(format string, a ...interface{}) {
+	l.Error(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Warnf(format string, a ...interface{}) {
+	l.Warn(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Infof(format string, a ...interface{}) {
+	l.Info(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Debugf(format string, a ...interface{}) {
+	l.Debug(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Debug1f(format string, a ...interface{}) {
+	l.Debug1(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) Debug2f(format string, a ...interface{}) {
+	l.Debug2(fmt.Sprintf(format, a...))
 }
 
 func (l *BaseLogger) active(level *LogLevel) bool {
