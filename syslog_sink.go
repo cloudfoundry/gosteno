@@ -50,3 +50,8 @@ func (s *Syslog) SetCodec(codec Codec) {
 func (s *Syslog) GetCodec() Codec {
 	return s.codec
 }
+
+func (s *Syslog) MarshalJSON() ([]byte, error) {
+	msg := "{\"type\":\"syslog\"}"
+	return []byte(msg), nil
+}

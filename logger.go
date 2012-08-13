@@ -1,8 +1,13 @@
 package steno
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Logger interface {
+	json.Marshaler
+
 	Log(level *LogLevel, message string, data map[string]string)
 	Fatal(message string)
 	Error(message string)
@@ -111,6 +116,20 @@ func (l *BaseLogger) Debug1f(format string, a ...interface{}) {
 
 func (l *BaseLogger) Debug2f(format string, a ...interface{}) {
 	l.Debug2(fmt.Sprintf(format, a...))
+}
+
+func (l *BaseLogger) MarshalJSON() ([]byte, error) {
+	sinks := "["
+	for i, sink := range l.sinks {
+		m, _ := json.Marshal(sink)
+		sinks += string(m)
+		if i != len(l.sinks)-1 {
+			sinks += ","
+		}
+	}
+	sinks += "]"
+	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.name, sinks)
+	return []byte(msg), nil
 }
 
 func (l *BaseLogger) active(level *LogLevel) bool {
