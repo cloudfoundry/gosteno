@@ -2,6 +2,7 @@ package steno
 
 import (
 	"encoding/json"
+	"strconv"
 )
 
 type JsonCodec struct {
@@ -16,6 +17,9 @@ func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 		"timestamp": record.timestamp.String(),
 		"message":   record.message,
 		"log_level": record.level.name,
+		"file":      record.file,
+		"method":    record.method,
+		"line":      strconv.Itoa(record.line),
 	}
 
 	if record.data != nil {
