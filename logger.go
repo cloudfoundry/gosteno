@@ -39,8 +39,8 @@ func NewLogger(name string) Logger {
 		baseLogger := new(BaseLogger)
 
 		baseLogger.name = name
-		baseLogger.sinks = config.sinks
-		baseLogger.level = config.level
+		baseLogger.sinks = config.Sinks
+		baseLogger.level = config.Level
 
 		logger = baseLogger
 		loggers[name] = logger
