@@ -21,5 +21,5 @@ func NewConfig(sinks []Sink, level string, codec Codec) *Config {
 		sink.SetCodec(codec)
 	}
 
-	return s;
+	return s
 }

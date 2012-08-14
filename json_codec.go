@@ -13,10 +13,10 @@ func NewJsonCodec() Codec {
 }
 
 func (j *JsonCodec) EncodeRecord(record *Record) string {
-	hash := map[string]string {
-		"timestamp" : record.timestamp.String(),
-		"message"   : record.message,
-		"log_level" : record.level.name,
+	hash := map[string]string{
+		"timestamp": record.timestamp.String(),
+		"message":   record.message,
+		"log_level": record.level.name,
 	}
 
 	bytes, err := json.Marshal(hash)

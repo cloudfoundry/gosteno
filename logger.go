@@ -1,7 +1,7 @@
 package steno
 
 type Logger struct {
-	name string
+	name  string
 	sinks []Sink
 	level *LogLevel
 }

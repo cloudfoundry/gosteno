@@ -8,4 +8,3 @@ func Init(c *Config) {
 
 	loggers = make(map[string]*Logger)
 }
-

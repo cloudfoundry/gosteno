@@ -6,7 +6,7 @@ import (
 
 type Syslog struct {
 	writer *syslog.Writer
-	codec Codec
+	codec  Codec
 }
 
 func NewSyslogSink() *Syslog {

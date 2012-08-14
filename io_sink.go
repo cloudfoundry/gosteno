@@ -7,7 +7,7 @@ import (
 
 type IOSink struct {
 	writer *bufio.Writer
-	codec Codec
+	codec  Codec
 }
 
 func NewIOSink(file *os.File) *IOSink {
@@ -32,7 +32,6 @@ func (ioSink *IOSink) AddRecord(record *Record) {
 	msg := ioSink.codec.EncodeRecord(record)
 	ioSink.writer.WriteString(msg)
 }
-
 
 func (ioSink *IOSink) Flush() {
 	ioSink.writer.Flush()
