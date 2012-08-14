@@ -5,21 +5,21 @@ import (
 	"os"
 )
 
-type IO struct {
+type IOSink struct {
 	writer *bufio.Writer
 	codec Codec
 }
 
-func NewIOSink(file *os.File) *IO {
+func NewIOSink(file *os.File) *IOSink {
 	writer := bufio.NewWriter(file)
 
-	io := new(IO)
-	io.writer = writer
+	ioSink := new(IOSink)
+	ioSink.writer = writer
 
-	return io
+	return ioSink
 }
 
-func NewFileSink(path string) *IO {
+func NewFileSink(path string) *IOSink {
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		panic(err)
@@ -28,20 +28,20 @@ func NewFileSink(path string) *IO {
 	return NewIOSink(file)
 }
 
-func (io *IO) AddRecord(record *Record) {
-	msg := io.codec.EncodeRecord(record)
-	io.writer.WriteString(msg)
+func (ioSink *IOSink) AddRecord(record *Record) {
+	msg := ioSink.codec.EncodeRecord(record)
+	ioSink.writer.WriteString(msg)
 }
 
 
-func (io *IO) Flush() {
-	io.writer.Flush()
+func (ioSink *IOSink) Flush() {
+	ioSink.writer.Flush()
 }
 
-func (io *IO) SetCodec(codec Codec) {
-	io.codec = codec
+func (ioSink *IOSink) SetCodec(codec Codec) {
+	ioSink.codec = codec
 }
 
-func (io *IO) GetCodec() Codec {
-	return io.codec
+func (ioSink *IOSink) GetCodec() Codec {
+	return ioSink.codec
 }
