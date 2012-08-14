@@ -2,16 +2,31 @@ package steno
 
 import "encoding/json"
 
+var DEFAULT_LEVEL = LOG_INFO
+var DEFAULT_CODEC = JSON_CODEC
+
 var config Config
-var loggers map[string]Logger
+var loggers = make(map[string]Logger)
 
 func Init(c *Config) {
 	config = *c
 
-	loggers = make(map[string]Logger)
+	if config.Level == nil {
+		config.Level = DEFAULT_LEVEL
+	}
+	if config.Codec == nil {
+		config.Codec = DEFAULT_CODEC
+	}
+	if config.Sinks == nil || len(config.Sinks) == 0 {
+		panic("Cannot init with no sinks")
+	}
 
-	if c.port > 0 {
-		initHttpServer(c.port)
+	for _, sink := range config.Sinks {
+		sink.SetCodec(config.Codec)
+	}
+
+	if config.Port > 0 {
+		initHttpServer(config.Port)
 	}
 }
 
