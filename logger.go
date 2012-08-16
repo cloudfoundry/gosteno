@@ -33,6 +33,9 @@ type BaseLogger struct {
 }
 
 func NewLogger(name string) Logger {
+	loggersMutex.Lock()
+	defer loggersMutex.Unlock()
+
 	logger := loggers[name]
 
 	if logger == nil {

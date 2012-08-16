@@ -4,12 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sync"
 )
 
 type IOSink struct {
 	writer *bufio.Writer
 	codec  Codec
 	file   *os.File
+
+	sync.Mutex
 }
 
 func NewIOSink(file *os.File) *IOSink {
@@ -33,6 +36,10 @@ func NewFileSink(path string) *IOSink {
 
 func (ioSink *IOSink) AddRecord(record *Record) {
 	bytes, _ := ioSink.codec.EncodeRecord(record)
+
+	ioSink.Lock()
+	defer ioSink.Unlock()
+
 	ioSink.writer.Write(bytes)
 
 	// Need to append a newline for IO sink
@@ -40,6 +47,9 @@ func (ioSink *IOSink) AddRecord(record *Record) {
 }
 
 func (ioSink *IOSink) Flush() {
+	ioSink.Lock()
+	defer ioSink.Unlock()
+
 	ioSink.writer.Flush()
 }
 
