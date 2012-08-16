@@ -32,26 +32,6 @@ type BaseLogger struct {
 	level *LogLevel
 }
 
-func NewLogger(name string) Logger {
-	loggersMutex.Lock()
-	defer loggersMutex.Unlock()
-
-	logger := loggers[name]
-
-	if logger == nil {
-		baseLogger := new(BaseLogger)
-
-		baseLogger.name = name
-		baseLogger.sinks = config.Sinks
-		baseLogger.level = config.Level
-
-		logger = baseLogger
-		loggers[name] = logger
-	}
-
-	return logger
-}
-
 func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string) {
 	if !l.active(level) {
 		return
