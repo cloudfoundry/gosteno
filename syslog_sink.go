@@ -2,11 +2,14 @@ package steno
 
 import (
 	"log/syslog"
+	"sync"
 )
 
 type Syslog struct {
 	writer *syslog.Writer
 	codec  Codec
+
+	sync.Mutex
 }
 
 func NewSyslogSink() *Syslog {
@@ -23,6 +26,9 @@ func NewSyslogSink() *Syslog {
 func (s *Syslog) AddRecord(record *Record) {
 	bytes, _ := s.codec.EncodeRecord(record)
 	msg := string(bytes)
+
+	s.Lock()
+	defer s.Unlock()
 
 	switch record.level {
 	case LOG_FATAL:
@@ -45,10 +51,16 @@ func (s *Syslog) Flush() {
 }
 
 func (s *Syslog) SetCodec(codec Codec) {
+	s.Lock()
+	defer s.Unlock()
+
 	s.codec = codec
 }
 
 func (s *Syslog) GetCodec() Codec {
+	s.Lock()
+	defer s.Unlock()
+
 	return s.codec
 }
 

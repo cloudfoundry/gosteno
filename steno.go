@@ -1,9 +1,13 @@
 package steno
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"sync"
+)
 
 var config Config
 var loggers = make(map[string]Logger)
+var loggersMutex sync.Mutex
 
 func Init(c *Config) {
 	config = *c
