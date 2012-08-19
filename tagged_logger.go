@@ -20,6 +20,19 @@ func NewTaggedLogger(logger Logger, data map[string]string) Logger {
 	return taggedLogger
 }
 
+func (l *TaggedLogger) Tag(data map[string]string) Logger {
+	d := make(map[string]string)
+	for k, v := range l.data {
+		d[k] = v
+	}
+	if data != nil {
+		for k, v := range data {
+			d[k] = v
+		}
+	}
+	return NewTaggedLogger(l.proxyLogger, d)
+}
+
 func (l *TaggedLogger) Log(level *LogLevel, message string, data map[string]string) {
 	if data != nil {
 		d := make(map[string]string)
