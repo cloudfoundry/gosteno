@@ -4,6 +4,7 @@ import ()
 
 type NullSink struct {
 	records []*Record
+	codec   Codec
 }
 
 func (nullSink *NullSink) AddRecord(record *Record) {
