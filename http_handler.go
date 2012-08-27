@@ -10,10 +10,28 @@ import (
 func handler(w http.ResponseWriter, r *http.Request) {
 	if strings.EqualFold(r.Method, "GET") {
 		io.WriteString(w, loggersInJson())
-	} else {
-		// TODO: PUT not implemented
-		http.NotFound(w, r)
+		return
 	}
+
+	if strings.EqualFold(r.Method, "PUT") {
+		level, ok := LEVELS[r.FormValue("level")]
+		if !ok {
+			http.Error(w, "The parameter of 'level' is not correct:", 400)
+			return
+		}
+
+		regexp := r.FormValue("regexp")
+		_, err := SetLoggerRegexp(regexp, level)
+		if err != nil {
+			http.Error(w, "The parameter of 'regexp' is not correct", 400)
+			return
+		}
+
+		io.WriteString(w, "Level changed successful")
+		return
+	}
+
+	http.NotFound(w, r)
 }
 
 func initHttpServer(port int) {
