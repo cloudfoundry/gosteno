@@ -3,6 +3,7 @@ package steno
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 type Logger interface {
@@ -104,7 +105,10 @@ func (l *BaseLogger) Debug2f(format string, a ...interface{}) {
 func (l *BaseLogger) MarshalJSON() ([]byte, error) {
 	sinks := "["
 	for i, sink := range l.sinks {
-		m, _ := json.Marshal(sink)
+		m, err := json.Marshal(sink)
+		if err != nil {
+			log.Println(err)
+		}
 		sinks += string(m)
 		if i != len(l.sinks)-1 {
 			sinks += ","
