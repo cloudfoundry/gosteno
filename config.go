@@ -5,4 +5,6 @@ type Config struct {
 	Level *LogLevel
 	Codec Codec
 	Port  int
+
+	EnableLOC bool
 }
