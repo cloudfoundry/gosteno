@@ -17,9 +17,12 @@ func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 		"timestamp": record.timestamp.String(),
 		"message":   record.message,
 		"log_level": record.level.name,
-		"file":      record.file,
-		"method":    record.method,
-		"line":      strconv.Itoa(record.line),
+	}
+
+	if config.EnableLOC {
+		hash["file"] = record.file
+		hash["method"] = record.method
+		hash["line"] = strconv.Itoa(record.line)
 	}
 
 	if record.data != nil {
