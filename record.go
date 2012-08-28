@@ -25,22 +25,24 @@ func NewRecord(level *LogLevel, message string, data map[string]string) *Record 
 	record.level = level
 	record.data = data
 
-	var function *runtime.Func
-	var file string
-	var line int
+	if config.EnableLOC {
+		var function *runtime.Func
+		var file string
+		var line int
 
-	pc := make([]uintptr, 50)
-	nptrs := runtime.Callers(2, pc)
-	for i := 0; i < nptrs; i++ {
-		function = runtime.FuncForPC(pc[i])
-		file, line = function.FileLine(pc[i])
-		if !strings.HasSuffix(file, "logger.go") {
-			break
+		pc := make([]uintptr, 50)
+		nptrs := runtime.Callers(2, pc)
+		for i := 0; i < nptrs; i++ {
+			function = runtime.FuncForPC(pc[i])
+			file, line = function.FileLine(pc[i])
+			if !strings.HasSuffix(file, "logger.go") {
+				break
+			}
 		}
+		record.file = file
+		record.method = function.Name()
+		record.line = line
 	}
-	record.file = file
-	record.method = function.Name()
-	record.line = line
 
 	return record
 }
