@@ -28,8 +28,8 @@ func Init(c *Config) {
 	if config.Codec == nil {
 		config.Codec = JSON_CODEC
 	}
-	if config.Sinks == nil || len(config.Sinks) == 0 {
-		panic("Cannot init with no sinks")
+	if config.Sinks == nil {
+		config.Sinks = []Sink{}
 	}
 
 	for _, sink := range config.Sinks {

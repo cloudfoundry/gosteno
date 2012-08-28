@@ -37,9 +37,9 @@ func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string
 		return
 	}
 
-	for _, sink := range l.sinks {
-		record := NewRecord(level, message, data)
+	record := NewRecord(level, message, data)
 
+	for _, sink := range l.sinks {
 		sink.AddRecord(record)
 		sink.Flush()
 	}
