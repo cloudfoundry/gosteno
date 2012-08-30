@@ -43,6 +43,15 @@ func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string
 		sink.AddRecord(record)
 		sink.Flush()
 	}
+
+	msg, _ := config.Codec.EncodeRecord(record)
+
+	wsMutex.RLock()
+	defer wsMutex.RUnlock()
+
+	for ch, _ := range wsChans[l.name] {
+		ch <- msg
+	}
 }
 
 func (l *BaseLogger) Fatal(message string) {
