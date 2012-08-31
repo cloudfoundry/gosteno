@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"html/template"
 )
 
 const (
 	WEBSOCKET_TAIL_PATH = "/ws/tail/"
+	HTTP_TAIL_PATH = "/tail/"
+	HTTP_LIST_LOGGERS_PATH = "/loggers"
 )
 
 type chanSet map[chan []byte]bool
@@ -25,6 +28,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		// TODO: PUT not implemented
 		http.NotFound(w, r)
 	}
+}
+
+func tailHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.RequestURI
+	logName := path[len(HTTP_TAIL_PATH):]
+
+	if loggers[logName] == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	url := fmt.Sprintf("ws://%s%s%s", r.Host, WEBSOCKET_TAIL_PATH, logName)
+	fmt.Println(url)
+
+	t, err := template.New("tail").Parse(asset("tail.html"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	t.Execute(w, template.URL(url))
 }
 
 func tailWSServer(rw *websocket.Conn) {
@@ -67,7 +90,9 @@ func tailWSServer(rw *websocket.Conn) {
 
 func initHttpServer(port int) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/loggers", handler)
+
+	mux.HandleFunc(HTTP_LIST_LOGGERS_PATH, handler)
+	mux.HandleFunc(HTTP_TAIL_PATH, tailHandler)
 
 	mux.Handle(WEBSOCKET_TAIL_PATH, websocket.Handler(tailWSServer))
 
