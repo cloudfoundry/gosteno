@@ -30,7 +30,7 @@ func (s *Syslog) AddRecord(record *Record) {
 	s.Lock()
 	defer s.Unlock()
 
-	switch record.level {
+	switch record.Level {
 	case LOG_FATAL:
 		s.writer.Crit(msg)
 	case LOG_ERROR:
@@ -42,7 +42,7 @@ func (s *Syslog) AddRecord(record *Record) {
 	case LOG_DEBUG, LOG_DEBUG1, LOG_DEBUG2:
 		s.writer.Debug(msg)
 	default:
-		panic("Unknown log level: " + record.level.name)
+		panic("Unknown log level: " + record.Level.name)
 	}
 }
 

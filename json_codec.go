@@ -14,20 +14,20 @@ func NewJsonCodec() Codec {
 
 func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 	hash := map[string]string{
-		"timestamp": record.timestamp.String(),
-		"message":   record.message,
-		"log_level": record.level.name,
+		"timestamp": record.Timestamp.String(),
+		"message":   record.Message,
+		"log_level": record.Level.name,
 	}
 
 	if config.EnableLOC {
-		hash["file"] = record.file
-		hash["method"] = record.method
-		hash["line"] = strconv.Itoa(record.line)
+		hash["file"] = record.File
+		hash["method"] = record.Method
+		hash["line"] = strconv.Itoa(record.Line)
 	}
 
-	if record.data != nil {
+	if record.Data != nil {
 		// Notice: it is possible data overwrite other record
-		for k, v := range record.data {
+		for k, v := range record.Data {
 			hash[k] = v
 		}
 	}
