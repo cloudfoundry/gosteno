@@ -15,16 +15,16 @@ func (s *RecordSuite) TestNewRecordWithLOCEnabled(c *C) {
 	record := NewRecord(LOG_INFO, message, map[string]string{}) // Line 15
 	config.EnableLOC = false
 
-	c.Assert(record.line, Equals, 15)
-	c.Assert(record.method, Equals, "gosteno.(*RecordSuite).TestNewRecordWithLOCEnabled")
-	c.Assert(record.file, Matches, ".*record_test.go$")
+	c.Assert(record.Line, Equals, 15)
+	c.Assert(record.Method, Equals, "gosteno.(*RecordSuite).TestNewRecordWithLOCEnabled")
+	c.Assert(record.File, Matches, ".*record_test.go$")
 }
 
 func (s *RecordSuite) TestNewRecordWithLOCDisabled(c *C) {
 	message := "Hello, world"
 	record := NewRecord(LOG_INFO, message, map[string]string{})
 
-	c.Assert(record.line, Equals, 0)
-	c.Assert(record.method, Equals, "")
-	c.Assert(record.file, Equals, "")
+	c.Assert(record.Line, Equals, 0)
+	c.Assert(record.Method, Equals, "")
+	c.Assert(record.File, Equals, "")
 }
