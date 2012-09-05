@@ -8,22 +8,22 @@ import (
 
 // FIXME: Missing fields
 type Record struct {
-	timestamp time.Time
-	message   string
-	level     *LogLevel
-	data      map[string]string
-	file      string
-	method    string
-	line      int
+	Timestamp time.Time
+	Message   string
+	Level     *LogLevel
+	Data      map[string]string
+	File      string
+	Method    string
+	Line      int
 }
 
 func NewRecord(level *LogLevel, message string, data map[string]string) *Record {
 	record := new(Record)
 
-	record.timestamp = time.Now()
-	record.message = message
-	record.level = level
-	record.data = data
+	record.Timestamp = time.Now()
+	record.Message = message
+	record.Level = level
+	record.Data = data
 
 	if config.EnableLOC {
 		var function *runtime.Func
@@ -39,9 +39,9 @@ func NewRecord(level *LogLevel, message string, data map[string]string) *Record 
 				break
 			}
 		}
-		record.file = file
-		record.method = function.Name()
-		record.line = line
+		record.File = file
+		record.Method = function.Name()
+		record.Line = line
 	}
 
 	return record
