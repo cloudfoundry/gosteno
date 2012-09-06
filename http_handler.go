@@ -99,6 +99,20 @@ func loggersListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type BasicAuth struct {
+	handler http.Handler
+}
+
+func (a *BasicAuth) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if !checkAuth(req, config.User, config.Password) {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("401 Unauthorized\n"))
+	} else {
+		a.handler.ServeHTTP(w, req)
+	}
+}
+
 func initHttpServer(port int) {
 	mux := http.NewServeMux()
 
@@ -106,9 +120,13 @@ func initHttpServer(port int) {
 	mux.HandleFunc(HTTP_LOGGER_PATH, loggerHandler)
 	mux.HandleFunc(HTTP_LIST_LOGGERS_PATH, loggersListHandler)
 
+	basicAuth := &BasicAuth{
+		handler: mux,
+	}
+
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: basicAuth,
 	}
 
 	go server.ListenAndServe()
