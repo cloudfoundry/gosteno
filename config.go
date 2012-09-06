@@ -7,4 +7,6 @@ type Config struct {
 	Port  int
 
 	EnableLOC bool
+	User      string
+	Password  string
 }
