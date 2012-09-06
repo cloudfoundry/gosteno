@@ -9,12 +9,21 @@ var url = "{{.}}";
 
 function init() {
   output = document.getElementById("output");
-  var websocket = new WebSocket(url);
+  var token = getToken("/ws/token");
+  var websocket = new WebSocket(url.concat("?token=").concat(token));
   console.log(websocket);
   websocket.onopen = function(e) { print("connected") };
   websocket.onclose = function(e) { print("disconnected") };
   websocket.onmessage = function(e) { print(e.data) };
   websocket.onerror = function(e) { print("ERROR: "+e.data) };
+}
+
+function getToken(path) {
+  var xmlHttp = new XMLHttpRequest();
+  var root = location.protocol + "//" + location.host;
+  xmlHttp.open("GET", root.concat(path), false);
+  xmlHttp.send(null);
+  return xmlHttp.responseText;
 }
 
 function print(msg) {
