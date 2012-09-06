@@ -18,6 +18,7 @@ const (
 	HTTP_LIST_LOGGERS_PATH = "/loggers"
 	HTTP_LOGGER_PATH       = "/logger/"
 	WEBSOCKET_TAIL_PATH    = "/ws/tail/"
+	WEBSOCKET_TOKEN_PATH   = "/ws/token"
 	HTTP_TAIL_PATH         = "/tail/"
 )
 
@@ -164,7 +165,6 @@ func tailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf("ws://%s%s%s", r.Host, WEBSOCKET_TAIL_PATH, logName)
-	fmt.Println(url)
 
 	t, err := template.New("tail").Parse(asset("tail.html"))
 	if err != nil {
@@ -175,7 +175,7 @@ func tailHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tailWSServer(rw *websocket.Conn) {
-	path := rw.Request().RequestURI
+	path := rw.Request().URL.Path
 	logName := path[len(WEBSOCKET_TAIL_PATH):]
 
 	if loggers[logName] == nil {
@@ -212,20 +212,37 @@ func tailWSServer(rw *websocket.Conn) {
 	wsMutex.Unlock()
 }
 
+type BasicAuth struct {
+	handler http.Handler
+}
+
+func (a *BasicAuth) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if !checkAuth(req, config.User, config.Password) {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(401)
+		w.Write([]byte("401 Unauthorized\n"))
+	} else {
+		a.handler.ServeHTTP(w, req)
+	}
+}
+
 func initHttpServer(port int) {
 	mux := http.NewServeMux()
-
 	mux.HandleFunc(HTTP_ROOT_PATH, rootHandler)
 	mux.HandleFunc(HTTP_REGEXP_PATH, regExpHandler)
 	mux.HandleFunc(HTTP_LOGGER_PATH, loggerHandler)
 	mux.HandleFunc(HTTP_LIST_LOGGERS_PATH, loggersListHandler)
 	mux.HandleFunc(HTTP_TAIL_PATH, tailHandler)
-
+	mux.HandleFunc(WEBSOCKET_TOKEN_PATH, wsTokenHandler)
 	mux.Handle(WEBSOCKET_TAIL_PATH, websocket.Handler(tailWSServer))
+
+	basicAuth := &BasicAuth{
+		handler: mux,
+	}
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: basicAuth,
 	}
 
 	go server.ListenAndServe()
