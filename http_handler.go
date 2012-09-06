@@ -2,6 +2,7 @@ package steno
 
 import (
 	"code.google.com/p/go.net/websocket"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -164,7 +166,6 @@ func tailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf("ws://%s%s%s", r.Host, WEBSOCKET_TAIL_PATH, logName)
-	fmt.Println(url)
 
 	t, err := template.New("tail").Parse(asset("tail.html"))
 	if err != nil {
@@ -212,20 +213,62 @@ func tailWSServer(rw *websocket.Conn) {
 	wsMutex.Unlock()
 }
 
+func checkAuth(req *http.Request, user string, password string) bool {
+	// FIXME:websocket client authentication is simply ignored currently for 
+	//       there is no suitable solution existing in official protocol yet.
+	if req.Header.Get("Upgrade") == "websocket" {
+		return true
+	}
+
+	if user == "" && password == "" {
+		return true
+	}
+
+	authParts := strings.Split(req.Header.Get("Authorization"), " ")
+	if len(authParts) != 2 || authParts[0] != "Basic" {
+		return false
+	}
+	code, err := base64.StdEncoding.DecodeString(authParts[1])
+	if err != nil {
+		return false
+	}
+	userPass := strings.Split(string(code), ":")
+	if len(userPass) != 2 || userPass[0] != user || userPass[1] != password {
+		return false
+	}
+	return true
+}
+
+type BasicAuth struct {
+	handler http.Handler
+}
+
+func (a *BasicAuth) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if !checkAuth(req, config.User, config.Password) {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(401)
+		w.Write([]byte("401 Unauthorized\n"))
+	} else {
+		a.handler.ServeHTTP(w, req)
+	}
+}
+
 func initHttpServer(port int) {
 	mux := http.NewServeMux()
-
 	mux.HandleFunc(HTTP_ROOT_PATH, rootHandler)
 	mux.HandleFunc(HTTP_REGEXP_PATH, regExpHandler)
 	mux.HandleFunc(HTTP_LOGGER_PATH, loggerHandler)
 	mux.HandleFunc(HTTP_LIST_LOGGERS_PATH, loggersListHandler)
 	mux.HandleFunc(HTTP_TAIL_PATH, tailHandler)
-
 	mux.Handle(WEBSOCKET_TAIL_PATH, websocket.Handler(tailWSServer))
+
+	basicAuth := &BasicAuth{
+		handler: mux,
+	}
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: basicAuth,
 	}
 
 	go server.ListenAndServe()
