@@ -2,6 +2,8 @@ package steno
 
 import (
 	"code.google.com/p/go.net/websocket"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -9,7 +11,9 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -18,6 +22,7 @@ const (
 	HTTP_LIST_LOGGERS_PATH = "/loggers"
 	HTTP_LOGGER_PATH       = "/logger/"
 	WEBSOCKET_TAIL_PATH    = "/ws/tail/"
+	WEBSOCKET_TOKEN_PATH   = "/ws/token"
 	HTTP_TAIL_PATH         = "/tail/"
 )
 
@@ -164,7 +169,6 @@ func tailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := fmt.Sprintf("ws://%s%s%s", r.Host, WEBSOCKET_TAIL_PATH, logName)
-	fmt.Println(url)
 
 	t, err := template.New("tail").Parse(asset("tail.html"))
 	if err != nil {
@@ -175,7 +179,7 @@ func tailHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tailWSServer(rw *websocket.Conn) {
-	path := rw.Request().RequestURI
+	path := rw.Request().URL.Path
 	logName := path[len(WEBSOCKET_TAIL_PATH):]
 
 	if loggers[logName] == nil {
@@ -212,20 +216,104 @@ func tailWSServer(rw *websocket.Conn) {
 	wsMutex.Unlock()
 }
 
+var TOKEN_LIFE_TIME, _ = time.ParseDuration("10m") //A token is valid only for 10 minutes
+var wsToken = struct {
+	sync.Mutex
+	token   []byte
+	endTime time.Time
+}{token: generateToken(), endTime: time.Now().Add(TOKEN_LIFE_TIME)}
+
+func generateToken() []byte {
+	const STRLEN = 24 //24 bits makes sure that there is no '=' padding
+	bytes := make([]byte, STRLEN)
+	rand.Read(bytes)
+	encoder := base64.URLEncoding
+	d := make([]byte, encoder.EncodedLen(len(bytes)))
+	encoder.Encode(d, bytes)
+	return d
+}
+
+func wsTokenHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		wsToken.Lock()
+		if wsToken.endTime.Sub(time.Now()) < 0 {
+			wsToken.token = generateToken()
+			wsToken.endTime = time.Now().Add(TOKEN_LIFE_TIME)
+		}
+		wsToken.Unlock()
+
+		_, err := w.Write(wsToken.token)
+		if err != nil {
+			log.Println(err)
+		}
+	default:
+		http.NotFound(w, r)
+	}
+}
+
+func checkAuth(req *http.Request, user string, password string) bool {
+	log.Printf("Authenticating for request: %s ...", req.URL)
+	if req.Header.Get("Upgrade") == "websocket" {
+		token := req.FormValue("token")
+		if (wsToken.endTime.Sub(time.Now()) >= 0) && (token == string(wsToken.token)) {
+			log.Println("WebSocket client authorized successfully")
+			return true
+		}
+		log.Println("WebSocket client authorized unsuccessfully")
+		return false
+	}
+
+	if user == "" && password == "" {
+		return true
+	}
+
+	authParts := strings.Split(req.Header.Get("Authorization"), " ")
+	if len(authParts) != 2 || authParts[0] != "Basic" {
+		return false
+	}
+	code, err := base64.StdEncoding.DecodeString(authParts[1])
+	if err != nil {
+		return false
+	}
+	userPass := strings.Split(string(code), ":")
+	if len(userPass) != 2 || userPass[0] != user || userPass[1] != password {
+		return false
+	}
+	return true
+}
+
+type BasicAuth struct {
+	handler http.Handler
+}
+
+func (a *BasicAuth) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	if !checkAuth(req, config.User, config.Password) {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(401)
+		w.Write([]byte("401 Unauthorized\n"))
+	} else {
+		a.handler.ServeHTTP(w, req)
+	}
+}
+
 func initHttpServer(port int) {
 	mux := http.NewServeMux()
-
 	mux.HandleFunc(HTTP_ROOT_PATH, rootHandler)
 	mux.HandleFunc(HTTP_REGEXP_PATH, regExpHandler)
 	mux.HandleFunc(HTTP_LOGGER_PATH, loggerHandler)
 	mux.HandleFunc(HTTP_LIST_LOGGERS_PATH, loggersListHandler)
 	mux.HandleFunc(HTTP_TAIL_PATH, tailHandler)
-
+	mux.HandleFunc(WEBSOCKET_TOKEN_PATH, wsTokenHandler)
 	mux.Handle(WEBSOCKET_TAIL_PATH, websocket.Handler(tailWSServer))
+
+	basicAuth := &BasicAuth{
+		handler: mux,
+	}
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Handler: basicAuth,
 	}
 
 	go server.ListenAndServe()
