@@ -3,6 +3,7 @@ package steno
 import (
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -11,6 +12,7 @@ type Record struct {
 	timestamp time.Time
 	message   string
 	level     *LogLevel
+	pid       int
 	data      map[string]string
 	file      string
 	method    string
@@ -24,6 +26,7 @@ func NewRecord(level *LogLevel, message string, data map[string]string) *Record 
 	record.message = message
 	record.level = level
 	record.data = data
+	record.pid = syscall.Getpid()
 
 	if config.EnableLOC {
 		var function *runtime.Func
