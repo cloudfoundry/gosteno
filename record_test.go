@@ -16,7 +16,7 @@ func (s *RecordSuite) TestNewRecordWithLOCEnabled(c *C) {
 	config.EnableLOC = false
 
 	c.Assert(record.Line, Equals, 15)
-	c.Assert(record.Method, Equals, "gosteno.(*RecordSuite).TestNewRecordWithLOCEnabled")
+	c.Assert(record.Method, Matches, `.*\.\(\*RecordSuite\)\.TestNewRecordWithLOCEnabled`)
 	c.Assert(record.File, Matches, ".*record_test.go$")
 }
 
