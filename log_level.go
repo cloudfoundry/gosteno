@@ -5,15 +5,17 @@ type LogLevel struct {
 	priority int
 }
 
-var LOG_OFF = NewLogLevel("off", 0)
-var LOG_FATAL = NewLogLevel("fatal", 1)
-var LOG_ERROR = NewLogLevel("error", 5)
-var LOG_WARN = NewLogLevel("warn", 10)
-var LOG_INFO = NewLogLevel("info", 15)
-var LOG_DEBUG = NewLogLevel("debug", 16)
-var LOG_DEBUG1 = NewLogLevel("debug1", 17)
-var LOG_DEBUG2 = NewLogLevel("debug2", 18)
-var LOG_ALL = NewLogLevel("all", 30)
+var (
+	LOG_OFF    = NewLogLevel("off", 0)
+	LOG_FATAL  = NewLogLevel("fatal", 1)
+	LOG_ERROR  = NewLogLevel("error", 5)
+	LOG_WARN   = NewLogLevel("warn", 10)
+	LOG_INFO   = NewLogLevel("info", 15)
+	LOG_DEBUG  = NewLogLevel("debug", 16)
+	LOG_DEBUG1 = NewLogLevel("debug1", 17)
+	LOG_DEBUG2 = NewLogLevel("debug2", 18)
+	LOG_ALL    = NewLogLevel("all", 30)
+)
 
 var LEVELS = map[string]*LogLevel{
 	"off":    LOG_OFF,

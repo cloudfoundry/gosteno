@@ -21,7 +21,7 @@ func Init(c *Config) {
 		config.Level = LOG_INFO
 	}
 	if config.Codec == nil {
-		config.Codec = JSON_CODEC
+		config.Codec = NewJsonCodec()
 	}
 	if config.Sinks == nil {
 		config.Sinks = []Sink{}

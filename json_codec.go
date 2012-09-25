@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const TIME_FORMAT = time.RFC1123
+const TimeFormat = time.RFC1123
 
 type JsonCodec struct {
 }
@@ -17,7 +17,7 @@ func NewJsonCodec() Codec {
 
 func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 	hash := map[string]string{
-		"timestamp": record.Timestamp.Format(TIME_FORMAT),
+		"timestamp": record.Timestamp.Format(TimeFormat),
 		"message":   record.Message,
 		"log_level": record.Level.name,
 	}
