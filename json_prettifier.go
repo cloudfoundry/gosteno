@@ -67,12 +67,7 @@ func (p *JsonPrettifier) DecodeLogEntry(logEntry string) (*Record, error) {
 	}
 
 	record := new(Record)
-	timestamp, err := time.Parse(TIME_FORMAT, fieldsMap["timestamp"])
-	if err != nil {
-		return nil, err
-	}
-	record.Timestamp = timestamp
-
+	record.Timestamp, _ = strconv.ParseInt(fieldsMap["timestamp"], 10, 64)
 	record.File = fieldsMap["file"]
 	record.Method = fieldsMap["method"]
 	record.Line, _ = strconv.Atoi(fieldsMap["line"])
@@ -108,8 +103,9 @@ func encodeLevel(level *LogLevel) string {
 	return fmt.Sprintf("%s ", strings.ToUpper(level.String()))
 }
 
-func encodeTimestamp(t time.Time) string {
-	return fmt.Sprintf("%s ", t.Format(TIME_FORMAT))
+func encodeTimestamp(t int64) string {
+	ut := time.Unix(t, 0)
+	return fmt.Sprintf("%s ", ut.Format("2006-01-02 15:04:05"))
 }
 
 func encodeFile(file string) string {

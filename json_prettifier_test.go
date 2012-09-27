@@ -35,22 +35,23 @@ func (s *JsonPrettifierSuite) TestPrettifyEntry(c *C) {
 	config.EnableLOC = false
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
-	bytes, _ := prettifier.PrettifyEntry(record)
+	b, _ := prettifier.PrettifyEntry(record)
 
 	// One example:
-	// INFO Wed, 19 Sep 2012 10:51:57 CST json_prettifier_test.go:34:TestPrettifyEntry {"foo":"bar"} Hello, world
-	c.Assert(string(bytes), Matches, `INFO .*son_prettifier_test.go:34:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`)
+	// INFO 2012-09-27 16:53:40 json_prettifier_test.go:34:TestPrettifyEntry {"foo":"bar"} Hello, world
+	c.Assert(string(b), Matches, `INFO .*son_prettifier_test.go:34:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`)
 }
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
 	entry := `{"file":"/tmp/gopath/src/gosteno/json_prettifier_test.go","foo":"bar","line":"57",
   "log_level":"info","message":"Hello, world","method":"gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry",
-  "timestamp":"Wed, 19 Sep 2012 00:19:29 CST"}`
+  "timestamp":"1348736601"}`
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
 	record, err := prettifier.DecodeLogEntry(entry)
 
 	c.Assert(err, IsNil)
+	c.Assert(record.Timestamp, Equals, int64(1348736601))
 	c.Assert(record.Line, Equals, 57)
 	c.Assert(record.Level, Equals, LOG_INFO)
 	c.Assert(record.Method, Equals, "gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry")

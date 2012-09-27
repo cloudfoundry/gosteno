@@ -17,7 +17,7 @@ func NewJsonCodec() Codec {
 
 func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 	hash := map[string]string{
-		"timestamp": record.Timestamp.Format(TIME_FORMAT),
+		"timestamp": strconv.FormatInt(record.Timestamp, 10),
 		"message":   record.Message,
 		"log_level": record.Level.name,
 	}
