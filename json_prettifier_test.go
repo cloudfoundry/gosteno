@@ -20,26 +20,26 @@ func (s *JsonPrettifierSuite) TestConstOrder(c *C) {
 	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
 
 	prettifier1 := NewJsonPrettifier(EXCLUDE_FILE | EXCLUDE_DATA)
-	bytes1, _ := prettifier1.PrettifyEntry(record)
+	bytes1, _ := prettifier1.EncodeRecord(record)
 
 	prettifier2 := NewJsonPrettifier(EXCLUDE_DATA | EXCLUDE_FILE)
-	bytes2, _ := prettifier2.PrettifyEntry(record)
+	bytes2, _ := prettifier2.EncodeRecord(record)
 
 	c.Assert(string(bytes1), Equals, string(bytes2))
 }
 
-func (s *JsonPrettifierSuite) TestPrettifyEntry(c *C) {
+func (s *JsonPrettifierSuite) TestEncodeRecord(c *C) {
 	config.EnableLOC = true
 	// The line number of below line is 34 which will be used as value of 'Line' field in record
 	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
 	config.EnableLOC = false
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
-	bytes, _ := prettifier.PrettifyEntry(record)
+	bytes, _ := prettifier.EncodeRecord(record)
 
 	// One example:
-	// INFO Wed, 19 Sep 2012 10:51:57 CST json_prettifier_test.go:34:TestPrettifyEntry {"foo":"bar"} Hello, world
-	c.Assert(string(bytes), Matches, `INFO .*son_prettifier_test.go:34:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`)
+	// INFO Wed, 19 Sep 2012 10:51:57 CST json_prettifier_test.go:34:TestEncodeRecord {"foo":"bar"} Hello, world
+	c.Assert(string(bytes), Matches, `INFO .*son_prettifier_test.go:34:TestEncodeRecord.*{"foo":"bar"}.*Hello, world`)
 }
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
