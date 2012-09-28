@@ -60,37 +60,15 @@ func NewJsonPrettifier(flag int) *JsonPrettifier {
 	return prettifier
 }
 
-func (p *JsonPrettifier) DecodeLogEntry(logEntry string) (*Record, error) {
-	var fieldsMap map[string]string
-	if err := json.Unmarshal([]byte(logEntry), &fieldsMap); err != nil {
-		return nil, err
-	}
-
+func (p *JsonPrettifier) DecodeJsonLogEntry(logEntry string) (*Record, error) {
 	record := new(Record)
-	record.Timestamp, _ = strconv.ParseInt(fieldsMap["timestamp"], 10, 64)
-	record.File = fieldsMap["file"]
-	record.Method = fieldsMap["method"]
-	record.Line, _ = strconv.Atoi(fieldsMap["line"])
-	record.Level = LEVELS[fieldsMap["log_level"]]
-	record.Message = fieldsMap["message"]
+	err := json.Unmarshal([]byte(logEntry), record)
 
-	var fields = map[string]bool{
-		"timestamp": true,
-		"file":      true,
-		"method":    true,
-		"line":      true,
-		"log_level": true,
-		"message":   true,
+	if err == nil {
+		record.Level = LEVELS[record.Level.name]
 	}
-	data := make(map[string]string)
-	for k, v := range fieldsMap {
-		if !fields[k] {
-			data[k] = v
-		}
-	}
-	record.Data = data
 
-	return record, nil
+	return record, err
 }
 
 func (p *JsonPrettifier) PrettifyEntry(record *Record) ([]byte, error) {
@@ -103,8 +81,8 @@ func encodeLevel(level *LogLevel) string {
 	return fmt.Sprintf("%s ", strings.ToUpper(level.String()))
 }
 
-func encodeTimestamp(t int64) string {
-	ut := time.Unix(t, 0)
+func encodeTimestamp(t float64) string {
+	ut := time.Unix(int64(t), 0)
 	return fmt.Sprintf("%s ", ut.Format("2006-01-02 15:04:05"))
 }
 
@@ -123,8 +101,8 @@ func encodeMethod(method string) string {
 }
 
 func encodeData(data map[string]string) (string, error) {
-	bytes, err := json.Marshal(data)
-	return fmt.Sprintf("%s ", string(bytes)), err
+	b, err := json.Marshal(data)
+	return fmt.Sprintf("%s ", string(b)), err
 }
 
 func encodeMessage(message string) string {

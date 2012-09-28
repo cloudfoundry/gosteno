@@ -1,6 +1,7 @@
 package steno
 
 import (
+	"fmt"
 	. "launchpad.net/gocheck"
 )
 
@@ -30,32 +31,37 @@ func (s *JsonPrettifierSuite) TestConstOrder(c *C) {
 
 func (s *JsonPrettifierSuite) TestPrettifyEntry(c *C) {
 	config.EnableLOC = true
-	// The line number of below line is 34 which will be used as value of 'Line' field in record
 	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
 	config.EnableLOC = false
+	l := record.Line
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
-	b, _ := prettifier.PrettifyEntry(record)
+	b, err := prettifier.PrettifyEntry(record)
+	c.Assert(err, IsNil)
 
 	// One example:
 	// INFO 2012-09-27 16:53:40 json_prettifier_test.go:34:TestPrettifyEntry {"foo":"bar"} Hello, world
-	c.Assert(string(b), Matches, `INFO .*son_prettifier_test.go:34:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`)
+	c.Assert(string(b), Matches, fmt.Sprintf(`INFO .*son_prettifier_test.go:%d:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`, l))
 }
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
-	entry := `{"file":"/tmp/gopath/src/gosteno/json_prettifier_test.go","foo":"bar","line":"57",
-  "log_level":"info","message":"Hello, world","method":"gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry",
-  "timestamp":"1348736601"}`
+	config.EnableLOC = true
+	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	config.EnableLOC = false
+	l := record.Line
+	t := record.Timestamp
+	b, _ := NewJsonCodec().EncodeRecord(record)
+	entry := string(b)
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
-	record, err := prettifier.DecodeLogEntry(entry)
+	record, err := prettifier.DecodeJsonLogEntry(entry)
 
 	c.Assert(err, IsNil)
-	c.Assert(record.Timestamp, Equals, int64(1348736601))
-	c.Assert(record.Line, Equals, 57)
+	c.Assert(record.Timestamp, Equals, t)
+	c.Assert(record.Line, Equals, l)
 	c.Assert(record.Level, Equals, LOG_INFO)
-	c.Assert(record.Method, Equals, "gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry")
+	c.Assert(record.Method, Matches, ".*TestDecodeLogEntry$")
 	c.Assert(record.Message, Equals, "Hello, world")
-	c.Assert(record.File, Equals, "/tmp/gopath/src/gosteno/json_prettifier_test.go")
+	c.Assert(record.File, Matches, ".*json_prettifier_test.go")
 	c.Assert(record.Data["foo"], Equals, "bar")
 }

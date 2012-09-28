@@ -1,6 +1,7 @@
 package steno
 
 import (
+	"encoding/json"
 	. "launchpad.net/gocheck"
 )
 
@@ -24,4 +25,16 @@ func (s *LogLevelSuite) TestLookupLevel(c *C) {
 func (s *LogLevelSuite) TestLookupNotExistLevel(c *C) {
 	notExistLevel := lookupLevel("foobar")
 	c.Assert(notExistLevel, IsNil)
+}
+
+func (s *LogLevelSuite) TestImplementedInterfaces(c *C) {
+	var v interface{} = NewLogLevel("foobar", 1)
+
+	// *LogLevel should implement json.Marshaler interface
+	_, ok := v.(json.Marshaler)
+	c.Assert(ok, Equals, true)
+
+	// *LogLevel should implement json.Unmarshaler interface
+	_, ok = v.(json.Unmarshaler)
+	c.Assert(ok, Equals, true)
 }

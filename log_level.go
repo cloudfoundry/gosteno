@@ -1,5 +1,11 @@
 package steno
 
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
 type LogLevel struct {
 	name     string
 	priority int
@@ -41,7 +47,22 @@ func lookupLevel(name string) *LogLevel {
 }
 
 func (level *LogLevel) MarshalJSON() ([]byte, error) {
-	return []byte(level.name), nil
+	return json.Marshal(level.name)
+}
+
+func (level *LogLevel) UnmarshalJSON(data []byte) error {
+	var n string
+	err := json.Unmarshal(data, &n)
+	if err != nil {
+		return err
+	}
+	if _, ok := LEVELS[n]; !ok {
+		return errors.New(fmt.Sprintf("No level with the name exists: %s", n))
+	}
+	level.name = n
+	level.priority = LEVELS[n].priority
+
+	return nil
 }
 
 func (level *LogLevel) String() string {

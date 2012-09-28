@@ -8,7 +8,7 @@ import (
 
 // FIXME: Missing fields
 type Record struct {
-	Timestamp int64
+	Timestamp float64
 	Message   string
 	Level     *LogLevel
 	Data      map[string]string
@@ -20,7 +20,7 @@ type Record struct {
 func NewRecord(level *LogLevel, message string, data map[string]string) *Record {
 	record := new(Record)
 
-	record.Timestamp = time.Now().Unix()
+	record.Timestamp = float64(time.Now().UnixNano()) / 1000000000
 	record.Message = message
 	record.Level = level
 	record.Data = data
