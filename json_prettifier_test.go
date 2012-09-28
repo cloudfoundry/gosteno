@@ -43,19 +43,23 @@ func (s *JsonPrettifierSuite) TestPrettifyEntry(c *C) {
 }
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
-	entry := `{"file":"/tmp/gopath/src/gosteno/json_prettifier_test.go","foo":"bar","line":"57",
-  "log_level":"info","message":"Hello, world","method":"gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry",
-  "timestamp":"1348736601"}`
+	config.EnableLOC = true
+	// The line number of below line is 48 which will be used as value of 'Line' field in record
+	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	config.EnableLOC = false
+	record.Timestamp = 1348736601
+	b, _ := NewJsonCodec().EncodeRecord(record)
+	entry := string(b)
 
 	prettifier := NewJsonPrettifier(EXCLUDE_NONE)
-	record, err := prettifier.DecodeLogEntry(entry)
+	record, err := prettifier.DecodeJsonLogEntry(entry)
 
 	c.Assert(err, IsNil)
 	c.Assert(record.Timestamp, Equals, int64(1348736601))
-	c.Assert(record.Line, Equals, 57)
+	c.Assert(record.Line, Equals, 48)
 	c.Assert(record.Level, Equals, LOG_INFO)
-	c.Assert(record.Method, Equals, "gosteno.(*JsonPrettifierSuite).TestDecodeLogEntry")
+	c.Assert(record.Method, Matches, ".*TestDecodeLogEntry$")
 	c.Assert(record.Message, Equals, "Hello, world")
-	c.Assert(record.File, Equals, "/tmp/gopath/src/gosteno/json_prettifier_test.go")
+	c.Assert(record.File, Matches, ".*json_prettifier_test.go")
 	c.Assert(record.Data["foo"], Equals, "bar")
 }

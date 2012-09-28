@@ -43,8 +43,8 @@ func (s *LoggerSuite) TestLog(c *C) {
 	logger := NewLogger("foobar")
 	logger.Info("Hello, world")
 	c.Assert(s.nSink.records, HasLen, 1)
-	bytes, _ := config.Codec.EncodeRecord(s.nSink.records[0])
-	c.Assert(string(bytes), Matches, "{.*Hello, world.*}")
+	b, _ := config.Codec.EncodeRecord(s.nSink.records[0])
+	c.Assert(string(b), Matches, "{.*Hello, world.*}")
 }
 
 func (s *LoggerSuite) TestLevelVisibility(c *C) {

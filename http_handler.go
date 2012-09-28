@@ -23,8 +23,8 @@ func loggerHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		bytes, _ := logger.MarshalJSON()
-		w.Write(bytes)
+		b, _ := logger.MarshalJSON()
+		w.Write(b)
 
 	case "PUT":
 		var levelParams struct{ Level string }
@@ -59,12 +59,12 @@ func regExpHandler(w http.ResponseWriter, r *http.Request) {
 			regexpInfo.RegExp = loggerRegexp.String()
 			regexpInfo.Level = loggerRegexpLevel.String()
 		}
-		bytes, err := json.Marshal(regexpInfo)
+		b, err := json.Marshal(regexpInfo)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		w.Write(bytes)
+		w.Write(b)
 
 	case "PUT":
 		jsonData, _ := ioutil.ReadAll(r.Body)

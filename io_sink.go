@@ -35,12 +35,12 @@ func NewFileSink(path string) *IOSink {
 }
 
 func (ioSink *IOSink) AddRecord(record *Record) {
-	bytes, _ := ioSink.codec.EncodeRecord(record)
+	b, _ := ioSink.codec.EncodeRecord(record)
 
 	ioSink.Lock()
 	defer ioSink.Unlock()
 
-	ioSink.writer.Write(bytes)
+	ioSink.writer.Write(b)
 
 	// Need to append a newline for IO sink
 	ioSink.writer.WriteString("\n")
