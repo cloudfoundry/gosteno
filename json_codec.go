@@ -2,7 +2,6 @@ package steno
 
 import (
 	"encoding/json"
-	"strconv"
 	"time"
 )
 
@@ -16,28 +15,10 @@ func NewJsonCodec() Codec {
 }
 
 func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
-	hash := map[string]string{
-		"timestamp": strconv.FormatInt(record.Timestamp, 10),
-		"message":   record.Message,
-		"log_level": record.Level.name,
-	}
-
-	if config.EnableLOC {
-		hash["file"] = record.File
-		hash["method"] = record.Method
-		hash["line"] = strconv.Itoa(record.Line)
-	}
-
-	if record.Data != nil {
-		// Notice: it is possible data overwrite other record
-		for k, v := range record.Data {
-			hash[k] = v
-		}
-	}
-
-	bytes, err := json.Marshal(hash)
+	b, err := json.Marshal(record)
 	if err != nil {
-		bytes = genErrorMsgInJson(err)
+		b = genErrorMsgInJson(err)
 	}
-	return bytes, err
+
+	return b, err
 }
