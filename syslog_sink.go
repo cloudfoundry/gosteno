@@ -24,8 +24,8 @@ func NewSyslogSink() *Syslog {
 }
 
 func (s *Syslog) AddRecord(record *Record) {
-	bytes, _ := s.codec.EncodeRecord(record)
-	msg := string(bytes)
+	b, _ := s.codec.EncodeRecord(record)
+	msg := string(b)
 
 	s.Lock()
 	defer s.Unlock()

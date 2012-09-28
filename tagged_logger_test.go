@@ -41,8 +41,8 @@ func (s *TaggedLoggerSuite) TestTaggedLogger(c *C) {
 	logger := NewLogger("foobar")
 	taggedLogger := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
 	taggedLogger.Info("Hello")
-	bytes, _ := config.Codec.EncodeRecord(s.nSink.records[0])
-	c.Assert(string(bytes), Matches, `{.*"foo":"bar".*}`)
+	b, _ := config.Codec.EncodeRecord(s.nSink.records[0])
+	c.Assert(string(b), Matches, `{.*"foo":"bar".*}`)
 }
 
 func (s *TaggedLoggerSuite) TestTaggedLogger2(c *C) {
@@ -52,7 +52,7 @@ func (s *TaggedLoggerSuite) TestTaggedLogger2(c *C) {
 	taggedLogger2.Info("Hello")
 	c.Assert(s.nSink.records, HasLen, 1)
 
-	bytes, _ := config.Codec.EncodeRecord(s.nSink.records[0])
-	c.Assert(string(bytes), Matches, `{.*"foo":"bar".*}`)
-	c.Assert(string(bytes), Matches, `{.*"oof":"rab".*}`)
+	b, _ := config.Codec.EncodeRecord(s.nSink.records[0])
+	c.Assert(string(b), Matches, `{.*"foo":"bar".*}`)
+	c.Assert(string(b), Matches, `{.*"oof":"rab".*}`)
 }

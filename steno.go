@@ -57,6 +57,6 @@ func NewLogger(name string) Logger {
 }
 
 func loggersInJson() string {
-	bytes, _ := json.Marshal(loggers)
-	return string(bytes)
+	b, _ := json.Marshal(loggers)
+	return string(b)
 }
