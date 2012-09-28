@@ -71,7 +71,7 @@ func (p *JsonPrettifier) DecodeJsonLogEntry(logEntry string) (*Record, error) {
 	return record, err
 }
 
-func (p *JsonPrettifier) PrettifyEntry(record *Record) ([]byte, error) {
+func (p *JsonPrettifier) EncodeRecord(record *Record) ([]byte, error) {
 	buffer := bytes.NewBufferString("")
 	err := p.entryTemplate.Execute(buffer, record)
 	return buffer.Bytes(), err

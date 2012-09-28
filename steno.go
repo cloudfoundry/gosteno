@@ -28,7 +28,9 @@ func Init(c *Config) {
 	}
 
 	for _, sink := range config.Sinks {
-		sink.SetCodec(config.Codec)
+		if sink.GetCodec() == nil {
+			sink.SetCodec(config.Codec)
+		}
 	}
 
 	if config.Port > 0 {
