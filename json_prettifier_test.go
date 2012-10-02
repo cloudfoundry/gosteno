@@ -11,8 +11,8 @@ var _ = Suite(&JsonPrettifierSuite{})
 
 func (s *JsonPrettifierSuite) TestConst(c *C) {
 	c.Assert(EXCLUDE_NONE, Equals, 0)
-	c.Assert(EXCLUDE_TIMESTAMP, Equals, 1)
-	c.Assert(EXCLUDE_LEVEL, Equals, 1<<5)
+	c.Assert(EXCLUDE_LEVEL, Equals, 1<<0)
+	c.Assert(EXCLUDE_TIMESTAMP, Equals, 1<<1)
 	c.Assert(EXCLUDE_LINE, Equals, 1<<3)
 }
 
@@ -40,6 +40,19 @@ func (s *JsonPrettifierSuite) TestPrettifyEntry(c *C) {
 	// One example:
 	// INFO Wed, 19 Sep 2012 10:51:57 CST json_prettifier_test.go:34:TestPrettifyEntry {"foo":"bar"} Hello, world
 	c.Assert(string(bytes), Matches, `INFO .*son_prettifier_test.go:34:TestPrettifyEntry.*{"foo":"bar"}.*Hello, world`)
+}
+
+func (s *JsonPrettifierSuite) TestExclude(c *C) {
+	config.EnableLOC = true
+	record := NewRecord(LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	config.EnableLOC = false
+
+	prettifier := NewJsonPrettifier(EXCLUDE_DATA | EXCLUDE_LINE)
+	bytes, _ := prettifier.PrettifyEntry(record)
+
+	// One example:
+	// INFO Wed, 19 Sep 2012 10:51:57 CST json_prettifier_test.go:TestExclude Hello, world
+	c.Assert(string(bytes), Matches, `INFO .*son_prettifier_test.go:TestExclude Hello, world`)
 }
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
