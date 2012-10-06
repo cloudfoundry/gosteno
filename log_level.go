@@ -2,7 +2,6 @@ package steno
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -21,7 +20,7 @@ var LOG_DEBUG1 = NewLogLevel("debug1", 17)
 var LOG_DEBUG2 = NewLogLevel("debug2", 18)
 var LOG_ALL = NewLogLevel("all", 30)
 
-var LEVELS = map[string]*LogLevel{
+var levels = map[string]*LogLevel{
 	"off":    LOG_OFF,
 	"fatal":  LOG_FATAL,
 	"error":  LOG_ERROR,
@@ -42,8 +41,12 @@ func NewLogLevel(name string, priority int) *LogLevel {
 	return level
 }
 
-func lookupLevel(name string) *LogLevel {
-	return LEVELS[name]
+func GetLogLevel(name string) (*LogLevel, error) {
+	if level, ok := levels[name]; ok {
+		return level, nil
+	}
+	err := fmt.Errorf("No level with that name exists : %s", name)
+	return nil, err
 }
 
 func (level *LogLevel) MarshalJSON() ([]byte, error) {
@@ -56,11 +59,11 @@ func (level *LogLevel) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := LEVELS[n]; !ok {
-		return errors.New(fmt.Sprintf("No level with the name exists: %s", n))
+	if l, err := GetLogLevel(n); err != nil {
+		return err
+	} else {
+		*level = *l
 	}
-	level.name = n
-	level.priority = LEVELS[n].priority
 
 	return nil
 }

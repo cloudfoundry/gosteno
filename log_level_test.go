@@ -17,14 +17,16 @@ func (s *LogLevelSuite) TestNewLogLevel(c *C) {
 	c.Assert(level.priority, Equals, 100)
 }
 
-func (s *LogLevelSuite) TestLookupLevel(c *C) {
-	infoLevel := lookupLevel("info")
+func (s *LogLevelSuite) TestGetLevel(c *C) {
+	infoLevel, err := GetLogLevel("info")
 	c.Assert(infoLevel, Equals, LOG_INFO)
+	c.Assert(err, IsNil)
 }
 
-func (s *LogLevelSuite) TestLookupNotExistLevel(c *C) {
-	notExistLevel := lookupLevel("foobar")
+func (s *LogLevelSuite) TestGetNotExistLevel(c *C) {
+	notExistLevel, err := GetLogLevel("foobar")
 	c.Assert(notExistLevel, IsNil)
+	c.Assert(err, NotNil)
 }
 
 func (s *LogLevelSuite) TestImplementedInterfaces(c *C) {
