@@ -127,7 +127,7 @@ func (s *HttpHandlerSuite) TestPutRegexpWithWrongParams2(c *C) {
 
 	m, _ := ioutil.ReadAll(r.Body)
 	c.Assert(r.StatusCode, Equals, http.StatusBadRequest)
-	c.Assert(string(m), Equals, "No level with the name exists : NotExistingLevel\n")
+	c.Assert(string(m), Equals, "No level with that name exists : NotExistingLevel\n")
 }
 
 func (s *HttpHandlerSuite) TestPutRegexpWithWrongParams3(c *C) {

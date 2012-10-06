@@ -63,11 +63,6 @@ func NewJsonPrettifier(flag int) *JsonPrettifier {
 func (p *JsonPrettifier) DecodeJsonLogEntry(logEntry string) (*Record, error) {
 	record := new(Record)
 	err := json.Unmarshal([]byte(logEntry), record)
-
-	if err == nil {
-		record.Level = LEVELS[record.Level.name]
-	}
-
 	return record, err
 }
 

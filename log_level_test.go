@@ -11,24 +11,26 @@ type LogLevelSuite struct {
 var _ = Suite(&LogLevelSuite{})
 
 func (s *LogLevelSuite) TestNewLogLevel(c *C) {
-	level := NewLogLevel("foobar", 100)
+	level := newLogLevel("foobar", 100)
 	c.Assert(level, NotNil)
 	c.Assert(level.name, Equals, "foobar")
 	c.Assert(level.priority, Equals, 100)
 }
 
-func (s *LogLevelSuite) TestLookupLevel(c *C) {
-	infoLevel := lookupLevel("info")
+func (s *LogLevelSuite) TestGetLevel(c *C) {
+	infoLevel, err := GetLogLevel("info")
 	c.Assert(infoLevel, Equals, LOG_INFO)
+	c.Assert(err, IsNil)
 }
 
-func (s *LogLevelSuite) TestLookupNotExistLevel(c *C) {
-	notExistLevel := lookupLevel("foobar")
+func (s *LogLevelSuite) TestGetNotExistLevel(c *C) {
+	notExistLevel, err := GetLogLevel("foobar")
 	c.Assert(notExistLevel, IsNil)
+	c.Assert(err, NotNil)
 }
 
 func (s *LogLevelSuite) TestImplementedInterfaces(c *C) {
-	var v interface{} = NewLogLevel("foobar", 1)
+	var v interface{} = newLogLevel("foobar", 1)
 
 	// *LogLevel should implement json.Marshaler interface
 	_, ok := v.(json.Marshaler)
