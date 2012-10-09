@@ -34,9 +34,9 @@ func loggerHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Can't parse the parameters", http.StatusBadRequest)
 			return
 		}
-		level, ok := LEVELS[levelParams.Level]
-		if !ok {
-			http.Error(w, fmt.Sprintf("No level with that name exists : %s", levelParams.Level), http.StatusBadRequest)
+		level, err := GetLogLevel(levelParams.Level)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		logger.level = level
@@ -74,9 +74,9 @@ func regExpHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Can't parse the parameters", http.StatusBadRequest)
 			return
 		}
-		level, ok := LEVELS[params.Level]
-		if !ok {
-			http.Error(w, fmt.Sprintf("No level with the name exists : %s", params.Level), http.StatusBadRequest)
+		level, err := GetLogLevel(params.Level)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		err = SetLoggerRegexp(params.RegExp, level)
