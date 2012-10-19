@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+const MaxMessageSize = 1024 * 3
+
 type Syslog struct {
 	writer *syslog.Writer
 	codec  Codec
@@ -24,6 +26,8 @@ func NewSyslogSink() *Syslog {
 }
 
 func (s *Syslog) AddRecord(record *Record) {
+	truncate(record)
+
 	bytes, _ := s.codec.EncodeRecord(record)
 	msg := string(bytes)
 
@@ -67,4 +71,12 @@ func (s *Syslog) GetCodec() Codec {
 func (s *Syslog) MarshalJSON() ([]byte, error) {
 	msg := "{\"type\":\"syslog\"}"
 	return []byte(msg), nil
+}
+
+func truncate(record *Record) {
+	if len(record.Message) <= MaxMessageSize {
+		return
+	}
+
+	record.Message = record.Message[:MaxMessageSize] + "..."
 }
