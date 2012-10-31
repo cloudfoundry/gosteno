@@ -14,8 +14,8 @@ type Syslog struct {
 	sync.Mutex
 }
 
-func NewSyslogSink() *Syslog {
-	writer, err := syslog.New(syslog.LOG_DEBUG, "")
+func NewSyslogSink(namespace string) *Syslog {
+	writer, err := syslog.New(syslog.LOG_DEBUG, namespace)
 	if err != nil {
 		panic(err)
 	}
