@@ -34,7 +34,6 @@ func (s *StenoSuite) TestInitLoggers(c *C) {
 }
 
 func (s *StenoSuite) TestDefaultConfig(c *C) {
-	c.Assert(config.Codec, Equals, JSON_CODEC)
 	c.Assert(config.Level, Equals, LOG_INFO)
 	c.Assert(config.Port, Equals, 0)
 }

@@ -2,10 +2,7 @@ package steno
 
 import (
 	"encoding/json"
-	"time"
 )
-
-const TIME_FORMAT = time.RFC1123
 
 type JsonCodec struct {
 }
