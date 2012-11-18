@@ -6,8 +6,8 @@ import (
 )
 
 type LogLevel struct {
-	name     string
-	priority int
+	Name     string
+	Priority int
 }
 
 var (
@@ -24,10 +24,10 @@ var (
 
 var levels = make(map[string]LogLevel)
 
-func defineLogLevel(name string, priority int) LogLevel {
-	level := LogLevel{name: name, priority: priority}
+func defineLogLevel(n string, p int) LogLevel {
+	level := LogLevel{Name: n, Priority: p}
 
-	levels[name] = level
+	levels[n] = level
 
 	return level
 }
@@ -44,7 +44,7 @@ func GetLogLevel(name string) (LogLevel, error) {
 }
 
 func (level LogLevel) MarshalJSON() ([]byte, error) {
-	return json.Marshal(level.name)
+	return json.Marshal(level.Name)
 }
 
 func (level *LogLevel) UnmarshalJSON(data []byte) error {
@@ -66,5 +66,5 @@ func (level *LogLevel) UnmarshalJSON(data []byte) error {
 }
 
 func (level LogLevel) String() string {
-	return level.name
+	return level.Name
 }

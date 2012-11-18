@@ -46,7 +46,7 @@ func (s *Syslog) AddRecord(record *Record) {
 	case LOG_DEBUG, LOG_DEBUG1, LOG_DEBUG2:
 		s.writer.Debug(msg)
 	default:
-		panic("Unknown log level: " + record.Level.name)
+		panic("Unknown log level: " + record.Level.Name)
 	}
 }
 

@@ -115,12 +115,12 @@ func (l *BaseLogger) MarshalJSON() ([]byte, error) {
 		}
 	}
 	sinks += "]"
-	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.name, sinks)
+	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.Name, sinks)
 	return []byte(msg), nil
 }
 
 func (l *BaseLogger) active(level LogLevel) bool {
-	if l.level.priority >= level.priority {
+	if l.level.Priority >= level.Priority {
 		return true
 	}
 

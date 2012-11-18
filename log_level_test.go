@@ -13,8 +13,8 @@ var _ = Suite(&LogLevelSuite{})
 func (s *LogLevelSuite) TestNewLogLevel(c *C) {
 	level := defineLogLevel("foobar", 100)
 	c.Assert(level, NotNil)
-	c.Assert(level.name, Equals, "foobar")
-	c.Assert(level.priority, Equals, 100)
+	c.Assert(level.Name, Equals, "foobar")
+	c.Assert(level.Priority, Equals, 100)
 }
 
 func (s *LogLevelSuite) TestGetLevel(c *C) {
