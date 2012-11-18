@@ -33,7 +33,7 @@ func (s *LoggerSuite) TestLoggerLevelActive(c *C) {
 	// active is a private method of BaseLogger
 	logger := NewLogger("bar").(*BaseLogger)
 	logger.level = LOG_INFO
-	higherLevels := []*LogLevel{LOG_WARN, LOG_ERROR, LOG_FATAL}
+	higherLevels := []LogLevel{LOG_WARN, LOG_ERROR, LOG_FATAL}
 	for _, level := range higherLevels {
 		c.Assert(logger.active(level), Equals, true)
 	}

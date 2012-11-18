@@ -9,7 +9,7 @@ import (
 type Logger interface {
 	json.Marshaler
 
-	Log(level *LogLevel, message string, data map[string]string)
+	Log(level LogLevel, message string, data map[string]string)
 	Fatal(message string)
 	Error(message string)
 	Warn(message string)
@@ -30,10 +30,10 @@ type Logger interface {
 type BaseLogger struct {
 	name  string
 	sinks []Sink
-	level *LogLevel
+	level LogLevel
 }
 
-func (l *BaseLogger) Log(level *LogLevel, message string, data map[string]string) {
+func (l *BaseLogger) Log(level LogLevel, message string, data map[string]string) {
 	if !l.active(level) {
 		return
 	}
@@ -119,7 +119,7 @@ func (l *BaseLogger) MarshalJSON() ([]byte, error) {
 	return []byte(msg), nil
 }
 
-func (l *BaseLogger) active(level *LogLevel) bool {
+func (l *BaseLogger) active(level LogLevel) bool {
 	if l.level.priority >= level.priority {
 		return true
 	}

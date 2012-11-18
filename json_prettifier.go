@@ -72,7 +72,7 @@ func (p *JsonPrettifier) EncodeRecord(record *Record) ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
-func encodeLevel(level *LogLevel) string {
+func encodeLevel(level LogLevel) string {
 	return fmt.Sprintf("%s ", strings.ToUpper(level.String()))
 }
 

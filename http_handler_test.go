@@ -92,7 +92,7 @@ func (s *HttpHandlerSuite) TestPutRegexp(c *C) {
 	http.DefaultClient.Do(req)
 
 	c.Assert(loggerRegexp.String(), Equals, "^foobar$")
-	c.Assert(loggerRegexpLevel, Equals, LOG_OFF)
+	c.Assert(*loggerRegexpLevel, Equals, LOG_OFF)
 	c.Assert(loggers["foobar"].level, Equals, LOG_OFF)
 }
 
@@ -127,7 +127,7 @@ func (s *HttpHandlerSuite) TestPutRegexpWithWrongParams2(c *C) {
 
 	m, _ := ioutil.ReadAll(r.Body)
 	c.Assert(r.StatusCode, Equals, http.StatusBadRequest)
-	c.Assert(string(m), Equals, "No level with that name exists : NotExistingLevel\n")
+	c.Assert(string(m), Matches, "Undefined log level: .*\n")
 }
 
 func (s *HttpHandlerSuite) TestPutRegexpWithWrongParams3(c *C) {
@@ -215,7 +215,7 @@ func (s *HttpHandlerSuite) TestPutLoggerWithWrongParams2(c *C) {
 
 	m, _ := ioutil.ReadAll(r.Body)
 	c.Assert(r.StatusCode, Equals, http.StatusBadRequest)
-	c.Assert(string(m), Equals, "No level with that name exists : NotExistingLevel\n")
+	c.Assert(string(m), Matches, "Undefined log level: .*\n")
 }
 
 func (s *HttpHandlerSuite) TestGetEmptyLoggers(c *C) {

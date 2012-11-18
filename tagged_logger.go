@@ -20,7 +20,7 @@ func NewTaggedLogger(logger Logger, data map[string]string) Logger {
 	return taggedLogger
 }
 
-func (l *TaggedLogger) Log(level *LogLevel, message string, data map[string]string) {
+func (l *TaggedLogger) Log(level LogLevel, message string, data map[string]string) {
 	if data != nil {
 		d := make(map[string]string)
 

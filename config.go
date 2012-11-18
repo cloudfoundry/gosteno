@@ -2,7 +2,7 @@ package steno
 
 type Config struct {
 	Sinks []Sink
-	Level *LogLevel
+	Level LogLevel
 	Codec Codec
 	Port  int
 

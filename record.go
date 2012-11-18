@@ -10,14 +10,14 @@ import (
 type Record struct {
 	Timestamp float64
 	Message   string
-	Level     *LogLevel
+	Level     LogLevel
 	Data      map[string]string
 	File      string
 	Method    string
 	Line      int
 }
 
-func NewRecord(level *LogLevel, message string, data map[string]string) *Record {
+func NewRecord(level LogLevel, message string, data map[string]string) *Record {
 	record := new(Record)
 
 	record.Timestamp = float64(time.Now().UnixNano()) / 1000000000

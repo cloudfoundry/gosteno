@@ -17,7 +17,7 @@ var loggers = make(map[string]*BaseLogger)
 func Init(c *Config) {
 	config = *c
 
-	if config.Level == nil {
+	if config.Level == (LogLevel{}) {
 		config.Level = LOG_INFO
 	}
 	if config.Codec == nil {

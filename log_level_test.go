@@ -11,32 +11,45 @@ type LogLevelSuite struct {
 var _ = Suite(&LogLevelSuite{})
 
 func (s *LogLevelSuite) TestNewLogLevel(c *C) {
-	level := newLogLevel("foobar", 100)
+	level := defineLogLevel("foobar", 100)
 	c.Assert(level, NotNil)
 	c.Assert(level.name, Equals, "foobar")
 	c.Assert(level.priority, Equals, 100)
 }
 
 func (s *LogLevelSuite) TestGetLevel(c *C) {
-	infoLevel, err := GetLogLevel("info")
-	c.Assert(infoLevel, Equals, LOG_INFO)
+	l, err := GetLogLevel("info")
+	c.Assert(l, Equals, LOG_INFO)
 	c.Assert(err, IsNil)
 }
 
 func (s *LogLevelSuite) TestGetNotExistLevel(c *C) {
-	notExistLevel, err := GetLogLevel("foobar")
-	c.Assert(notExistLevel, IsNil)
+	l, err := GetLogLevel("foobar")
+	c.Assert(l, Equals, LogLevel{})
 	c.Assert(err, NotNil)
 }
 
-func (s *LogLevelSuite) TestImplementedInterfaces(c *C) {
-	var v interface{} = newLogLevel("foobar", 1)
+func (s *LogLevelSuite) TestMarshal(c *C) {
+	m, err := json.Marshal(LOG_INFO)
 
-	// *LogLevel should implement json.Marshaler interface
-	_, ok := v.(json.Marshaler)
-	c.Assert(ok, Equals, true)
+	c.Assert(err, IsNil)
+	c.Assert(string(m), Equals, "\"info\"")
+}
 
-	// *LogLevel should implement json.Unmarshaler interface
-	_, ok = v.(json.Unmarshaler)
-	c.Assert(ok, Equals, true)
+func (s *LogLevelSuite) TestUnmarshal(c *C) {
+	var l LogLevel
+
+	err := json.Unmarshal([]byte("\"info\""), &l)
+
+	c.Assert(err, IsNil)
+	c.Assert(l, Equals, LOG_INFO)
+}
+
+func (s *LogLevelSuite) TestUnmarshalError(c *C) {
+	var l LogLevel
+
+	err := json.Unmarshal([]byte("\"undefined\""), &l)
+
+	c.Assert(err.Error(), Matches, "Undefined log level: .*")
+	c.Assert(l, Equals, LogLevel{})
 }

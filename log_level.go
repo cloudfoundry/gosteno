@@ -11,57 +11,60 @@ type LogLevel struct {
 }
 
 var (
-	LOG_OFF    = newLogLevel("off", 0)
-	LOG_FATAL  = newLogLevel("fatal", 1)
-	LOG_ERROR  = newLogLevel("error", 5)
-	LOG_WARN   = newLogLevel("warn", 10)
-	LOG_INFO   = newLogLevel("info", 15)
-	LOG_DEBUG  = newLogLevel("debug", 16)
-	LOG_DEBUG1 = newLogLevel("debug1", 17)
-	LOG_DEBUG2 = newLogLevel("debug2", 18)
-	LOG_ALL    = newLogLevel("all", 30)
+	LOG_OFF    = defineLogLevel("off", 0)
+	LOG_FATAL  = defineLogLevel("fatal", 1)
+	LOG_ERROR  = defineLogLevel("error", 5)
+	LOG_WARN   = defineLogLevel("warn", 10)
+	LOG_INFO   = defineLogLevel("info", 15)
+	LOG_DEBUG  = defineLogLevel("debug", 16)
+	LOG_DEBUG1 = defineLogLevel("debug1", 17)
+	LOG_DEBUG2 = defineLogLevel("debug2", 18)
+	LOG_ALL    = defineLogLevel("all", 30)
 )
 
-var levels = map[string]*LogLevel{}
+var levels = make(map[string]LogLevel)
 
-func newLogLevel(name string, priority int) *LogLevel {
-	level := new(LogLevel)
-
-	level.name = name
-	level.priority = priority
+func defineLogLevel(name string, priority int) LogLevel {
+	level := LogLevel{name: name, priority: priority}
 
 	levels[name] = level
 
 	return level
 }
 
-func GetLogLevel(name string) (*LogLevel, error) {
+func GetLogLevel(name string) (LogLevel, error) {
+	var level LogLevel
+
 	if level, ok := levels[name]; ok {
 		return level, nil
 	}
-	err := fmt.Errorf("No level with that name exists : %s", name)
-	return nil, err
+
+	err := fmt.Errorf("Undefined log level: %s", name)
+	return level, err
 }
 
-func (level *LogLevel) MarshalJSON() ([]byte, error) {
+func (level LogLevel) MarshalJSON() ([]byte, error) {
 	return json.Marshal(level.name)
 }
 
 func (level *LogLevel) UnmarshalJSON(data []byte) error {
 	var n string
+
 	err := json.Unmarshal(data, &n)
 	if err != nil {
 		return err
 	}
-	if l, err := GetLogLevel(n); err != nil {
+
+	l, err := GetLogLevel(n)
+	if err != nil {
 		return err
-	} else {
-		*level = *l
 	}
+
+	*level = l
 
 	return nil
 }
 
-func (level *LogLevel) String() string {
+func (level LogLevel) String() string {
 	return level.name
 }
