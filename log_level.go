@@ -12,7 +12,8 @@ type LogLevel struct {
 
 var (
 	LOG_OFF    = defineLogLevel("off", 0)
-	LOG_FATAL  = defineLogLevel("fatal", 1)
+	LOG_PANIC  = defineLogLevel("panic", 1)
+	LOG_FATAL  = defineLogLevel("fatal", 3)
 	LOG_ERROR  = defineLogLevel("error", 5)
 	LOG_WARN   = defineLogLevel("warn", 10)
 	LOG_INFO   = defineLogLevel("info", 15)

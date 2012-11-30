@@ -35,7 +35,7 @@ func (s *Syslog) AddRecord(record *Record) {
 	defer s.Unlock()
 
 	switch record.Level {
-	case LOG_FATAL:
+	case LOG_PANIC, LOG_FATAL:
 		s.writer.Crit(msg)
 	case LOG_ERROR:
 		s.writer.Err(msg)
