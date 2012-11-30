@@ -40,6 +40,7 @@ func (l *TaggedLogger) Log(level LogLevel, message string, data map[string]strin
 
 func (l *TaggedLogger) Fatal(message string) {
 	l.Log(LOG_FATAL, message, nil)
+	panic(message)
 }
 
 func (l *TaggedLogger) Error(message string) {

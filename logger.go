@@ -48,6 +48,7 @@ func (l *BaseLogger) Log(level LogLevel, message string, data map[string]string)
 
 func (l *BaseLogger) Fatal(message string) {
 	l.Log(LOG_FATAL, message, nil)
+	panic(message)
 }
 
 func (l *BaseLogger) Error(message string) {

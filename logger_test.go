@@ -60,3 +60,13 @@ func (s *LoggerSuite) TestCreatingDupLogger(c *C) {
 	logger2 := NewLogger("foobar")
 	c.Assert(logger1, Equals, logger2)
 }
+
+func (s *LoggerSuite) TestPanic(c *C) {
+	logger := NewLogger("foobar")
+	c.Assert(func() { logger.Fatal("fail!") }, PanicMatches, "fail!")
+	c.Assert(func() { logger.Fatalf("fail!%s", "fail!") }, PanicMatches, "fail!fail!")
+
+	t := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
+	c.Assert(func() { t.Fatal("panic") }, PanicMatches, "panic")
+	c.Assert(func() { t.Fatalf("panic!%s", "panic!") }, PanicMatches, "panic!panic!")
+}
