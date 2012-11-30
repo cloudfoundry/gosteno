@@ -10,6 +10,8 @@ type Logger interface {
 	json.Marshaler
 
 	Log(level LogLevel, message string, data map[string]string)
+
+	Panic(message string)
 	Fatal(message string)
 	Error(message string)
 	Warn(message string)
@@ -18,6 +20,7 @@ type Logger interface {
 	Debug1(message string)
 	Debug2(message string)
 
+	Panicf(format string, a ...interface{})
 	Fatalf(format string, a ...interface{})
 	Errorf(format string, a ...interface{})
 	Warnf(format string, a ...interface{})
@@ -46,6 +49,11 @@ func (l *BaseLogger) Log(level LogLevel, message string, data map[string]string)
 	}
 }
 
+func (l *BaseLogger) Panic(message string) {
+	l.Fatal(message)
+	panic(message)
+}
+
 func (l *BaseLogger) Fatal(message string) {
 	l.Log(LOG_FATAL, message, nil)
 }
@@ -72,6 +80,11 @@ func (l *BaseLogger) Debug1(message string) {
 
 func (l *BaseLogger) Debug2(message string) {
 	l.Log(LOG_DEBUG2, message, nil)
+}
+
+func (l *BaseLogger) Panicf(format string, a ...interface{}) {
+	l.Fatalf(format, a...)
+	panic(fmt.Sprintf(format, a...))
 }
 
 func (l *BaseLogger) Fatalf(format string, a ...interface{}) {

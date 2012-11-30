@@ -38,6 +38,11 @@ func (l *TaggedLogger) Log(level LogLevel, message string, data map[string]strin
 	}
 }
 
+func (l *TaggedLogger) Panic(message string) {
+	l.Fatal(message)
+	panic(message)
+}
+
 func (l *TaggedLogger) Fatal(message string) {
 	l.Log(LOG_FATAL, message, nil)
 }
@@ -64,6 +69,11 @@ func (l *TaggedLogger) Debug1(message string) {
 
 func (l *TaggedLogger) Debug2(message string) {
 	l.Log(LOG_DEBUG2, message, nil)
+}
+
+func (l *TaggedLogger) Panicf(format string, a ...interface{}) {
+	l.Fatalf(format, a...)
+	panic(fmt.Sprintf(format, a...))
 }
 
 func (l *TaggedLogger) Fatalf(format string, a ...interface{}) {
