@@ -1,9 +1,24 @@
 # Gosteno
 
-## Overview
-
 Gosteno is a golang implementation of the
 [steno log tool](https://github.com/cloudfoundry/steno).  The feature set of Gosteno is very similar with that of ruby steno.
+
+## Overview
+
+Core concepts behind Gosteno includes codec, sink, level.
+
+*codec*
+
+A codec encodes log entries to structural data, more specifically, JSON format data. Besides JSON codecs, Gosteno provides prettified codec which generates more human-readable data.
+
+*sink*
+
+Roughly speaking, a sink is the destination where you store your log data. It's an abstraction of the underlying data storage system. Currently Gosteno support two kinds of sinks, namely IOSink and SyslogSink. IOSink includes files and standard output while SyslogSink stream you log data to syslog daemons such as rsyslogd. You can register as many sinks as you want. Everytime you log information, it will be written to all the sinks you have registered. 
+
+*level*
+
+Gosteno supports 9 levels(from low to high): all, debug2, debug1, debug, info, warn, error, fatal, off. You can change the level on the fly without respawning the process.
+
 ## Get Gosteno
 
     go get -u github.com/cloudfoundry/gosteno
