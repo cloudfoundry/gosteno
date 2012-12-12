@@ -3,22 +3,29 @@
 ## Overview
 
 Gosteno is a golang implementation of the
-[steno log tool](https://github.com/cloudfoundry/steno).  The feature set and concept in Gosteno are very similar with those in ruby steno.
+[steno log tool](https://github.com/cloudfoundry/steno).  The feature set of Gosteno is very similar with that of ruby steno.
+## Get Gosteno
+
+    go get -u github.com/cloudfoundry/gosteno
+
 ## Getting started
+
+    package main
+    
     import (
-        steno "gosteno"
+        steno "github.com/cloudfoundry/gosteno"
         "os"
     )
-
+    
     func main() {
         c := &steno.Config{
             Sinks: []steno.Sink{
                 steno.NewFileSink("./a.log"),
                 steno.NewIOSink(os.Stdout),
-                steno.NewSyslogSink(),
+                steno.NewSyslogSink("foobar"),
             },
             Level:     steno.LOG_INFO,
-            Codec:     steno.JSON_CODEC,
+            Codec:     steno.NewJsonCodec(),
             Port:      8080,
             EnableLOC: true,
         }
@@ -27,15 +34,6 @@ Gosteno is a golang implementation of the
         t := steno.NewTaggedLogger(logger, map[string]string{"foo": "bar", "hello": "world"})
         t.Info("Hello")
     }
-## Using gerrit
-
-    $ export GOPATH=~/gocode
-    $ mkdir -p $GOPATH/src/github.com/cloudfoundry
-    $ cd $GOPATH/src/github.com/cloudfoundry
-    $ gerrit clone ssh://[<your username>@]reviews.cloudfoundry.org:29418/gosteno
-    $ cd gosteno
-    $ go test
-
 
 ## Change logger properties on the fly
 
