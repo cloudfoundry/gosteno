@@ -13,17 +13,17 @@ import (
 var prettifier *steno.JsonPrettifier
 
 var ignoreParseError = false
-var helptext = `Usage: steno-prettify [OPTS] [FILE(s)]
+var helptext = `Usage: gosteno-prettify [OPTS] [FILE(s)]
 
 Parses json formatted log lines from FILE(s), or stdin,
 and displays a more human friendly version of each line to stdout.
 
 Examples :
 
-    steno-prettify f - g
+    gosteno-prettify f - g
         Prettify f's contents, then standard input, then g's contents.
 
-    steno-prettify
+    gosteno-prettify
         Prettify contents of stdin.
 
 Options:
