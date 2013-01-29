@@ -25,3 +25,9 @@ func (s *RecordSuite) TestNewRecordWithoutLOC(c *C) {
 	c.Check(r.Line, Equals, 0)
 	c.Check(r.Method, Equals, "")
 }
+
+func (s *RecordSuite) TestRecordPid(c *C) {
+	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
+
+	c.Check(r.Pid, Not(Equals), 0)
+}

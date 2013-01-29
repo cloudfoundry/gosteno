@@ -1,6 +1,7 @@
 package steno
 
 import (
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 // FIXME: Missing fields
 type Record struct {
 	Timestamp float64
+	Pid       int
 	Source    string
 	Level     LogLevel
 	Message   string
@@ -18,9 +20,16 @@ type Record struct {
 	Method    string
 }
 
+var pid int
+
+func init() {
+	pid = os.Getpid()
+}
+
 func NewRecord(s string, l LogLevel, m string, d map[string]string) *Record {
 	r := &Record{
 		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
+		Pid:       pid,
 		Source:    s,
 		Level:     l,
 		Message:   m,
