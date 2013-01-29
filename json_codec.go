@@ -14,7 +14,7 @@ func NewJsonCodec() Codec {
 func (j *JsonCodec) EncodeRecord(record *Record) ([]byte, error) {
 	b, err := json.Marshal(record)
 	if err != nil {
-		b = genErrorMsgInJson(err)
+		return json.Marshal(map[string]string{"error": err.Error()})
 	}
 
 	return b, err
