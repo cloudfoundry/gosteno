@@ -7,17 +7,16 @@ import (
 	"time"
 )
 
-// FIXME: Missing fields
 type Record struct {
-	Timestamp float64
-	Pid       int
-	Source    string
-	Level     LogLevel
-	Message   string
-	Data      map[string]string
-	File      string
-	Line      int
-	Method    string
+	Timestamp float64           `json:"timestamp"`
+	Pid       int               `json:"process_id"`
+	Source    string            `json:"source"`
+	Level     LogLevel          `json:"log_level"`
+	Message   string            `json:"message"`
+	Data      map[string]string `json:"data"`
+	File      string            `json:"file"`
+	Line      int               `json:"line"`
+	Method    string            `json:"method"`
 }
 
 var pid int
