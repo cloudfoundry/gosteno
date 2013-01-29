@@ -25,29 +25,29 @@ var (
 var levels = make(map[string]LogLevel)
 
 func defineLogLevel(n string, p int) LogLevel {
-	level := LogLevel{Name: n, Priority: p}
+	x := LogLevel{Name: n, Priority: p}
 
-	levels[n] = level
+	levels[n] = x
 
-	return level
+	return x
 }
 
 func GetLogLevel(name string) (LogLevel, error) {
-	var level LogLevel
+	var x LogLevel
 
-	if level, ok := levels[name]; ok {
-		return level, nil
+	if x, ok := levels[name]; ok {
+		return x, nil
 	}
 
 	err := fmt.Errorf("Undefined log level: %s", name)
-	return level, err
+	return x, err
 }
 
-func (level LogLevel) MarshalJSON() ([]byte, error) {
-	return json.Marshal(level.Name)
+func (x LogLevel) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.Name)
 }
 
-func (level *LogLevel) UnmarshalJSON(data []byte) error {
+func (x *LogLevel) UnmarshalJSON(data []byte) error {
 	var n string
 
 	err := json.Unmarshal(data, &n)
@@ -55,16 +55,16 @@ func (level *LogLevel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	l, err := GetLogLevel(n)
+	y, err := GetLogLevel(n)
 	if err != nil {
 		return err
 	}
 
-	*level = l
+	*x = y
 
 	return nil
 }
 
-func (level LogLevel) String() string {
-	return level.Name
+func (l LogLevel) String() string {
+	return l.Name
 }

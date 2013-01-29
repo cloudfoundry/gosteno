@@ -18,11 +18,11 @@ type IOSink struct {
 func NewIOSink(file *os.File) *IOSink {
 	writer := bufio.NewWriter(file)
 
-	ioSink := new(IOSink)
-	ioSink.writer = writer
-	ioSink.file = file
+	x := new(IOSink)
+	x.writer = writer
+	x.file = file
 
-	return ioSink
+	return x
 }
 
 func NewFileSink(path string) *IOSink {
@@ -34,40 +34,40 @@ func NewFileSink(path string) *IOSink {
 	return NewIOSink(file)
 }
 
-func (ioSink *IOSink) AddRecord(record *Record) {
-	bytes, _ := ioSink.codec.EncodeRecord(record)
+func (x *IOSink) AddRecord(record *Record) {
+	bytes, _ := x.codec.EncodeRecord(record)
 
-	ioSink.Lock()
-	defer ioSink.Unlock()
+	x.Lock()
+	defer x.Unlock()
 
-	ioSink.writer.Write(bytes)
+	x.writer.Write(bytes)
 
 	// Need to append a newline for IO sink
-	ioSink.writer.WriteString("\n")
+	x.writer.WriteString("\n")
 }
 
-func (ioSink *IOSink) Flush() {
-	ioSink.Lock()
-	defer ioSink.Unlock()
+func (x *IOSink) Flush() {
+	x.Lock()
+	defer x.Unlock()
 
-	ioSink.writer.Flush()
+	x.writer.Flush()
 }
 
-func (ioSink *IOSink) SetCodec(codec Codec) {
-	ioSink.Lock()
-	defer ioSink.Unlock()
+func (x *IOSink) SetCodec(codec Codec) {
+	x.Lock()
+	defer x.Unlock()
 
-	ioSink.codec = codec
+	x.codec = codec
 }
 
-func (ioSink *IOSink) GetCodec() Codec {
-	ioSink.Lock()
-	defer ioSink.Unlock()
+func (x *IOSink) GetCodec() Codec {
+	x.Lock()
+	defer x.Unlock()
 
-	return ioSink.codec
+	return x.codec
 }
 
-func (ioSink *IOSink) MarshalJSON() ([]byte, error) {
-	msg := fmt.Sprintf("{\"type\": \"file\", \"file\": \"%s\"}", ioSink.file.Name())
+func (x *IOSink) MarshalJSON() ([]byte, error) {
+	msg := fmt.Sprintf("{\"type\": \"file\", \"file\": \"%s\"}", x.file.Name())
 	return []byte(msg), nil
 }

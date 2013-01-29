@@ -20,84 +20,84 @@ func NewTaggedLogger(logger Logger, data map[string]string) Logger {
 	return taggedLogger
 }
 
-func (l *TaggedLogger) Log(level LogLevel, message string, data map[string]string) {
+func (x *TaggedLogger) Log(l LogLevel, m string, data map[string]string) {
 	if data != nil {
 		d := make(map[string]string)
 
 		// data will cover userData if key is the same
-		for k, v := range l.data {
+		for k, v := range x.data {
 			d[k] = v
 		}
 		for k, v := range data {
 			d[k] = v
 		}
 
-		l.proxyLogger.Log(level, message, d)
+		x.proxyLogger.Log(l, m, d)
 	} else {
-		l.proxyLogger.Log(level, message, l.data)
+		x.proxyLogger.Log(l, m, x.data)
 	}
 }
 
-func (l *TaggedLogger) Fatal(message string) {
-	l.Log(LOG_FATAL, message, nil)
-	panic(message)
+func (x *TaggedLogger) Fatal(m string) {
+	x.Log(LOG_FATAL, m, nil)
+	panic(m)
 }
 
-func (l *TaggedLogger) Error(message string) {
-	l.Log(LOG_ERROR, message, nil)
+func (x *TaggedLogger) Error(m string) {
+	x.Log(LOG_ERROR, m, nil)
 }
 
-func (l *TaggedLogger) Warn(message string) {
-	l.Log(LOG_WARN, message, nil)
+func (x *TaggedLogger) Warn(m string) {
+	x.Log(LOG_WARN, m, nil)
 }
 
-func (l *TaggedLogger) Info(message string) {
-	l.Log(LOG_INFO, message, nil)
+func (x *TaggedLogger) Info(m string) {
+	x.Log(LOG_INFO, m, nil)
 }
 
-func (l *TaggedLogger) Debug(message string) {
-	l.Log(LOG_DEBUG, message, nil)
+func (x *TaggedLogger) Debug(m string) {
+	x.Log(LOG_DEBUG, m, nil)
 }
 
-func (l *TaggedLogger) Debug1(message string) {
-	l.Log(LOG_DEBUG1, message, nil)
+func (x *TaggedLogger) Debug1(m string) {
+	x.Log(LOG_DEBUG1, m, nil)
 }
 
-func (l *TaggedLogger) Debug2(message string) {
-	l.Log(LOG_DEBUG2, message, nil)
+func (x *TaggedLogger) Debug2(m string) {
+	x.Log(LOG_DEBUG2, m, nil)
 }
 
-func (l *TaggedLogger) Fatalf(format string, a ...interface{}) {
-	l.Fatal(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Fatalf(f string, a ...interface{}) {
+	x.Fatal(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Errorf(format string, a ...interface{}) {
-	l.Error(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Errorf(f string, a ...interface{}) {
+	x.Error(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Warnf(format string, a ...interface{}) {
-	l.Warn(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Warnf(f string, a ...interface{}) {
+	x.Warn(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Infof(format string, a ...interface{}) {
-	l.Info(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Infof(f string, a ...interface{}) {
+	x.Info(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Debugf(format string, a ...interface{}) {
-	l.Debug(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Debugf(f string, a ...interface{}) {
+	x.Debug(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Debug1f(format string, a ...interface{}) {
-	l.Debug1(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Debug1f(f string, a ...interface{}) {
+	x.Debug1(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) Debug2f(format string, a ...interface{}) {
-	l.Debug2(fmt.Sprintf(format, a...))
+func (x *TaggedLogger) Debug2f(f string, a ...interface{}) {
+	x.Debug2(fmt.Sprintf(f, a...))
 }
 
-func (l *TaggedLogger) MarshalJSON() ([]byte, error) {
-	data, _ := json.Marshal(l.data)
-	proxy, _ := json.Marshal(l.proxyLogger)
+func (x *TaggedLogger) MarshalJSON() ([]byte, error) {
+	data, _ := json.Marshal(x.data)
+	proxy, _ := json.Marshal(x.proxyLogger)
 
 	msg := fmt.Sprintf("{\"data\": %s, \"proxy\": %s}", data, proxy)
 	return []byte(msg), nil

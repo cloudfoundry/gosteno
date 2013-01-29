@@ -9,22 +9,22 @@ import (
 type Logger interface {
 	json.Marshaler
 
-	Log(level LogLevel, message string, data map[string]string)
-	Fatal(message string)
-	Error(message string)
-	Warn(message string)
-	Info(message string)
-	Debug(message string)
-	Debug1(message string)
-	Debug2(message string)
+	Log(level LogLevel, m string, data map[string]string)
+	Fatal(m string)
+	Error(m string)
+	Warn(m string)
+	Info(m string)
+	Debug(m string)
+	Debug1(m string)
+	Debug2(m string)
 
-	Fatalf(format string, a ...interface{})
-	Errorf(format string, a ...interface{})
-	Warnf(format string, a ...interface{})
-	Infof(format string, a ...interface{})
-	Debugf(format string, a ...interface{})
-	Debug1f(format string, a ...interface{})
-	Debug2f(format string, a ...interface{})
+	Fatalf(f string, a ...interface{})
+	Errorf(f string, a ...interface{})
+	Warnf(f string, a ...interface{})
+	Infof(f string, a ...interface{})
+	Debugf(f string, a ...interface{})
+	Debug1f(f string, a ...interface{})
+	Debug2f(f string, a ...interface{})
 }
 
 type BaseLogger struct {
@@ -33,95 +33,95 @@ type BaseLogger struct {
 	level LogLevel
 }
 
-func (l *BaseLogger) Log(level LogLevel, message string, data map[string]string) {
-	if !l.active(level) {
+func (x *BaseLogger) Log(l LogLevel, m string, data map[string]string) {
+	if !x.active(l) {
 		return
 	}
 
-	record := NewRecord(l.name, level, message, data)
+	record := NewRecord(x.name, l, m, data)
 
-	for _, sink := range l.sinks {
+	for _, sink := range x.sinks {
 		sink.AddRecord(record)
 		sink.Flush()
 	}
 }
 
-func (l *BaseLogger) Fatal(message string) {
-	l.Log(LOG_FATAL, message, nil)
-	panic(message)
+func (x *BaseLogger) Fatal(m string) {
+	x.Log(LOG_FATAL, m, nil)
+	panic(m)
 }
 
-func (l *BaseLogger) Error(message string) {
-	l.Log(LOG_ERROR, message, nil)
+func (x *BaseLogger) Error(m string) {
+	x.Log(LOG_ERROR, m, nil)
 }
 
-func (l *BaseLogger) Warn(message string) {
-	l.Log(LOG_WARN, message, nil)
+func (x *BaseLogger) Warn(m string) {
+	x.Log(LOG_WARN, m, nil)
 }
 
-func (l *BaseLogger) Info(message string) {
-	l.Log(LOG_INFO, message, nil)
+func (x *BaseLogger) Info(m string) {
+	x.Log(LOG_INFO, m, nil)
 }
 
-func (l *BaseLogger) Debug(message string) {
-	l.Log(LOG_DEBUG, message, nil)
+func (x *BaseLogger) Debug(m string) {
+	x.Log(LOG_DEBUG, m, nil)
 }
 
-func (l *BaseLogger) Debug1(message string) {
-	l.Log(LOG_DEBUG1, message, nil)
+func (x *BaseLogger) Debug1(m string) {
+	x.Log(LOG_DEBUG1, m, nil)
 }
 
-func (l *BaseLogger) Debug2(message string) {
-	l.Log(LOG_DEBUG2, message, nil)
+func (x *BaseLogger) Debug2(m string) {
+	x.Log(LOG_DEBUG2, m, nil)
 }
 
-func (l *BaseLogger) Fatalf(format string, a ...interface{}) {
-	l.Fatal(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Fatalf(f string, a ...interface{}) {
+	x.Fatal(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Errorf(format string, a ...interface{}) {
-	l.Error(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Errorf(f string, a ...interface{}) {
+	x.Error(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Warnf(format string, a ...interface{}) {
-	l.Warn(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Warnf(f string, a ...interface{}) {
+	x.Warn(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Infof(format string, a ...interface{}) {
-	l.Info(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Infof(f string, a ...interface{}) {
+	x.Info(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Debugf(format string, a ...interface{}) {
-	l.Debug(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Debugf(f string, a ...interface{}) {
+	x.Debug(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Debug1f(format string, a ...interface{}) {
-	l.Debug1(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Debug1f(f string, a ...interface{}) {
+	x.Debug1(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) Debug2f(format string, a ...interface{}) {
-	l.Debug2(fmt.Sprintf(format, a...))
+func (x *BaseLogger) Debug2f(f string, a ...interface{}) {
+	x.Debug2(fmt.Sprintf(f, a...))
 }
 
-func (l *BaseLogger) MarshalJSON() ([]byte, error) {
+func (x *BaseLogger) MarshalJSON() ([]byte, error) {
 	sinks := "["
-	for i, sink := range l.sinks {
+	for i, sink := range x.sinks {
 		m, err := json.Marshal(sink)
 		if err != nil {
 			log.Println(err)
 		}
 		sinks += string(m)
-		if i != len(l.sinks)-1 {
+		if i != len(x.sinks)-1 {
 			sinks += ","
 		}
 	}
 	sinks += "]"
-	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.Name, sinks)
+	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", x.level.Name, sinks)
 	return []byte(msg), nil
 }
 
-func (l *BaseLogger) active(level LogLevel) bool {
-	if l.level.Priority >= level.Priority {
+func (x *BaseLogger) active(level LogLevel) bool {
+	if x.level.Priority >= level.Priority {
 		return true
 	}
 
