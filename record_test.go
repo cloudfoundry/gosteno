@@ -4,27 +4,24 @@ import (
 	. "launchpad.net/gocheck"
 )
 
-type RecordSuite struct {
-}
+type RecordSuite struct{}
 
 var _ = Suite(&RecordSuite{})
 
-func (s *RecordSuite) TestNewRecordWithLOCEnabled(c *C) {
-	message := "Hello, GOSTENO"
+func (s *RecordSuite) TestNewRecordWithLOC(c *C) {
 	config.EnableLOC = true
-	record := NewRecord(LOG_INFO, message, map[string]string{}) // Line 15
+	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
 	config.EnableLOC = false
 
-	c.Assert(record.Line, Equals, 15)
-	c.Assert(record.Method, Matches, `.*\.\(\*RecordSuite\)\.TestNewRecordWithLOCEnabled`)
-	c.Assert(record.File, Matches, ".*record_test.go$")
+	c.Check(r.File, Matches, ".*record_test.go$")
+	c.Check(r.Line, Equals, 13)
+	c.Check(r.Method, Matches, `.*\.\(\*RecordSuite\)\.TestNewRecordWithLOC`)
 }
 
-func (s *RecordSuite) TestNewRecordWithLOCDisabled(c *C) {
-	message := "Hello, world"
-	record := NewRecord(LOG_INFO, message, map[string]string{})
+func (s *RecordSuite) TestNewRecordWithoutLOC(c *C) {
+	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
 
-	c.Assert(record.Line, Equals, 0)
-	c.Assert(record.Method, Equals, "")
-	c.Assert(record.File, Equals, "")
+	c.Check(r.File, Equals, "")
+	c.Check(r.Line, Equals, 0)
+	c.Check(r.Method, Equals, "")
 }

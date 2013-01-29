@@ -9,21 +9,23 @@ import (
 // FIXME: Missing fields
 type Record struct {
 	Timestamp float64
-	Message   string
+	Source    string
 	Level     LogLevel
+	Message   string
 	Data      map[string]string
 	File      string
-	Method    string
 	Line      int
+	Method    string
 }
 
-func NewRecord(level LogLevel, message string, data map[string]string) *Record {
-	record := new(Record)
-
-	record.Timestamp = float64(time.Now().UnixNano()) / 1000000000
-	record.Message = message
-	record.Level = level
-	record.Data = data
+func NewRecord(s string, l LogLevel, m string, d map[string]string) *Record {
+	r := &Record{
+		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
+		Source:    s,
+		Level:     l,
+		Message:   m,
+		Data:      d,
+	}
 
 	if config.EnableLOC {
 		var function *runtime.Func
@@ -39,10 +41,10 @@ func NewRecord(level LogLevel, message string, data map[string]string) *Record {
 				break
 			}
 		}
-		record.File = file
-		record.Method = function.Name()
-		record.Line = line
+		r.File = file
+		r.Line = line
+		r.Method = function.Name()
 	}
 
-	return record
+	return r
 }
