@@ -2,7 +2,6 @@ package steno
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"sync"
 )
@@ -65,9 +64,4 @@ func (x *IOSink) GetCodec() Codec {
 	defer x.Unlock()
 
 	return x.codec
-}
-
-func (x *IOSink) MarshalJSON() ([]byte, error) {
-	msg := fmt.Sprintf("{\"type\": \"file\", \"file\": \"%s\"}", x.file.Name())
-	return []byte(msg), nil
 }

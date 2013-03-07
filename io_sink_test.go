@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"io"
 	. "launchpad.net/gocheck"
-	"os"
 )
 
 type IOSinkSuite struct {
@@ -29,11 +28,4 @@ func (s *IOSinkSuite) TestAddRecord(c *C) {
 	msg, err := bufReader.ReadString('\n')
 	c.Assert(err, IsNil)
 	c.Assert(msg, Matches, `{.*"Hello, \\nworld".*}\n`)
-}
-
-func (s *IOSinkSuite) TestMarshalJSON(c *C) {
-	sink := NewIOSink(os.Stdout)
-	sink.SetCodec(NewJsonCodec())
-	msgBytes, _ := sink.MarshalJSON()
-	c.Assert(string(msgBytes), Matches, `{.*"/dev/stdout".*}`)
 }

@@ -1,13 +1,8 @@
 package steno
 
 type Config struct {
-	Sinks []Sink
-	Level LogLevel
-	Codec Codec
-	Port  int
-
+	Sinks     []Sink
+	Level     LogLevel
+	Codec     Codec
 	EnableLOC bool
-
-	User     string
-	Password string
 }

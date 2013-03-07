@@ -68,11 +68,6 @@ func (s *Syslog) GetCodec() Codec {
 	return s.codec
 }
 
-func (s *Syslog) MarshalJSON() ([]byte, error) {
-	msg := "{\"type\":\"syslog\"}"
-	return []byte(msg), nil
-}
-
 func truncate(record *Record) {
 	if len(record.Message) <= MaxMessageSize {
 		return

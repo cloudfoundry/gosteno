@@ -33,10 +33,6 @@ func Init(c *Config) {
 		}
 	}
 
-	if config.Port > 0 {
-		initHttpServer(config.Port)
-	}
-
 	for name, _ := range loggers {
 		loggers[name] = nil
 	}

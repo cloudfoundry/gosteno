@@ -1,10 +1,5 @@
 package steno
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 type TaggedLogger struct {
 	Logger
 
@@ -38,12 +33,4 @@ func (l *TaggedLogger) Log(x LogLevel, m string, d map[string]interface{}) {
 	} else {
 		l.Logger.Log(x, m, l.d)
 	}
-}
-
-func (l *TaggedLogger) MarshalJSON() ([]byte, error) {
-	data, _ := json.Marshal(l.d)
-	proxy, _ := json.Marshal(l.Logger)
-
-	msg := fmt.Sprintf("{\"data\": %s, \"proxy\": %s}", data, proxy)
-	return []byte(msg), nil
 }

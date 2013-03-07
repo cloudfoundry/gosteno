@@ -25,8 +25,3 @@ func (nSink *nullSink) SetCodec(codec Codec) {
 func (nSink *nullSink) GetCodec() Codec {
 	return nil
 }
-
-func (nSink *nullSink) MarshalJSON() ([]byte, error) {
-	msg := `{"type":"null"}`
-	return []byte(msg), nil
-}

@@ -1,9 +1,7 @@
 package steno
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 )
 
 type L interface {
@@ -39,23 +37,6 @@ func (l *BaseLogger) Log(x LogLevel, m string, d map[string]interface{}) {
 	if x == LOG_FATAL {
 		panic(m)
 	}
-}
-
-func (l *BaseLogger) MarshalJSON() ([]byte, error) {
-	sinks := "["
-	for i, sink := range l.sinks {
-		m, err := json.Marshal(sink)
-		if err != nil {
-			log.Println(err)
-		}
-		sinks += string(m)
-		if i != len(l.sinks)-1 {
-			sinks += ","
-		}
-	}
-	sinks += "]"
-	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.Name, sinks)
-	return []byte(msg), nil
 }
 
 func (l Logger) Fatal(m string) {
