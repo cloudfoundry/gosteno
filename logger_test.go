@@ -10,6 +10,10 @@ type LoggerSuite struct {
 
 var _ = Suite(&LoggerSuite{})
 
+func NumLogger() int {
+	return len(loggers)
+}
+
 func (s *LoggerSuite) SetUpTest(c *C) {
 	cfg := Config{}
 	s.nSink = newNullSink()
@@ -29,13 +33,27 @@ func (s *LoggerSuite) TestLoggersNum(c *C) {
 	c.Assert(len(loggers), Equals, 0)
 }
 
-func (s *LoggerSuite) TestLoggerLevelActive(c *C) {
-	// active is a private method of BaseLogger
-	logger := NewLogger("bar").(*BaseLogger)
-	logger.level = LOG_INFO
-	higherLevels := []LogLevel{LOG_WARN, LOG_ERROR, LOG_FATAL}
-	for _, level := range higherLevels {
-		c.Assert(logger.active(level), Equals, true)
+func (s *LoggerSuite) TestLogLevel(c *C) {
+	bl := &BaseLogger{
+		name:  "bar",
+		level: LOG_INFO,
+		sinks: []Sink{&nullSink{}},
+	}
+
+	higher := []LogLevel{LOG_INFO, LOG_WARN, LOG_ERROR}
+	for _, l := range higher {
+		s := &nullSink{}
+		bl.sinks = []Sink{s}
+		bl.Log(l, "hello", nil)
+		c.Assert(len(s.records), Equals, 1)
+	}
+
+	lower := []LogLevel{LOG_DEBUG, LOG_DEBUG1, LOG_DEBUG2, LOG_ALL}
+	for _, l := range lower {
+		s := &nullSink{}
+		bl.sinks = []Sink{s}
+		bl.Log(l, "hello", nil)
+		c.Assert(len(s.records), Equals, 0)
 	}
 }
 

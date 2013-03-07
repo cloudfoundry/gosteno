@@ -44,9 +44,9 @@ func (s *StenoSuite) TestLoggersInJson(c *C) {
 
 func (s *StenoSuite) TestSetLoggerRegexp(c *C) {
 	// level is a field of BaseLogger, hence type cast is needed
-	logger1 := NewLogger("test").(*BaseLogger)
-	logger2 := NewLogger("test2").(*BaseLogger)
-	logger3 := NewLogger("test3").(*BaseLogger)
+	logger1 := NewLogger("test").L.(*BaseLogger)
+	logger2 := NewLogger("test2").L.(*BaseLogger)
+	logger3 := NewLogger("test3").L.(*BaseLogger)
 
 	c.Assert(logger1.level, Equals, LOG_INFO)
 	c.Assert(logger2.level, Equals, LOG_INFO)
@@ -70,9 +70,9 @@ func (s *StenoSuite) TestSetLoggerRegexp(c *C) {
 
 func (s *StenoSuite) TestClearLoggerRegexp(c *C) {
 	// level is a field of BaseLogger, hence type cast is needed
-	logger1 := NewLogger("test").(*BaseLogger)
-	logger2 := NewLogger("test2").(*BaseLogger)
-	logger3 := NewLogger("test3").(*BaseLogger)
+	logger1 := NewLogger("test").L.(*BaseLogger)
+	logger2 := NewLogger("test2").L.(*BaseLogger)
+	logger3 := NewLogger("test3").L.(*BaseLogger)
 
 	c.Assert(logger1.level, Equals, LOG_INFO)
 	c.Assert(logger2.level, Equals, LOG_INFO)

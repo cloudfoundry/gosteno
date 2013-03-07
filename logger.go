@@ -6,26 +6,13 @@ import (
 	"log"
 )
 
-type Logger interface {
-	json.Marshaler
+type L interface {
+	Level() LogLevel
+	Log(x LogLevel, m string, d map[string]interface{})
+}
 
-	Log(level LogLevel, m string, d map[string]interface{})
-
-	Fatal(m string)
-	Error(m string)
-	Warn(m string)
-	Info(m string)
-	Debug(m string)
-	Debug1(m string)
-	Debug2(m string)
-
-	Fatalf(f string, a ...interface{})
-	Errorf(f string, a ...interface{})
-	Warnf(f string, a ...interface{})
-	Infof(f string, a ...interface{})
-	Debugf(f string, a ...interface{})
-	Debug1f(f string, a ...interface{})
-	Debug2f(f string, a ...interface{})
+type Logger struct {
+	L
 }
 
 type BaseLogger struct {
@@ -34,102 +21,155 @@ type BaseLogger struct {
 	level LogLevel
 }
 
-func (x *BaseLogger) Log(l LogLevel, m string, d map[string]interface{}) {
-	if !x.active(l) {
+func (l *BaseLogger) active(x LogLevel) bool {
+	return l.level.Priority >= x.Priority
+}
+
+func (l *BaseLogger) Level() LogLevel {
+	return l.level
+}
+
+func (l *BaseLogger) Log(x LogLevel, m string, d map[string]interface{}) {
+	if !l.active(x) {
 		return
 	}
 
-	record := NewRecord(x.name, l, m, d)
+	r := NewRecord(l.name, x, m, d)
+	for _, s := range l.sinks {
+		s.AddRecord(r)
+		s.Flush()
+	}
 
-	for _, sink := range x.sinks {
-		sink.AddRecord(record)
-		sink.Flush()
+	if x == LOG_FATAL {
+		panic(m)
 	}
 }
 
-func (x *BaseLogger) Fatal(m string) {
-	x.Log(LOG_FATAL, m, nil)
-	panic(m)
-}
-
-func (x *BaseLogger) Error(m string) {
-	x.Log(LOG_ERROR, m, nil)
-}
-
-func (x *BaseLogger) Warn(m string) {
-	x.Log(LOG_WARN, m, nil)
-}
-
-func (x *BaseLogger) Info(m string) {
-	x.Log(LOG_INFO, m, nil)
-}
-
-func (x *BaseLogger) Debug(m string) {
-	x.Log(LOG_DEBUG, m, nil)
-}
-
-func (x *BaseLogger) Debug1(m string) {
-	x.Log(LOG_DEBUG1, m, nil)
-}
-
-func (x *BaseLogger) Debug2(m string) {
-	x.Log(LOG_DEBUG2, m, nil)
-}
-
-func (x *BaseLogger) Fatalf(f string, a ...interface{}) {
-	x.Fatal(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Errorf(f string, a ...interface{}) {
-	x.Error(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Warnf(f string, a ...interface{}) {
-	x.Warn(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Infof(f string, a ...interface{}) {
-	x.Info(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Debugf(f string, a ...interface{}) {
-	x.Debug(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Debug1f(f string, a ...interface{}) {
-	x.Debug1(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) Debug2f(f string, a ...interface{}) {
-	x.Debug2(fmt.Sprintf(f, a...))
-}
-
-func (x *BaseLogger) MarshalJSON() ([]byte, error) {
+func (l *BaseLogger) MarshalJSON() ([]byte, error) {
 	sinks := "["
-	for i, sink := range x.sinks {
+	for i, sink := range l.sinks {
 		m, err := json.Marshal(sink)
 		if err != nil {
 			log.Println(err)
 		}
 		sinks += string(m)
-		if i != len(x.sinks)-1 {
+		if i != len(l.sinks)-1 {
 			sinks += ","
 		}
 	}
 	sinks += "]"
-	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", x.level.Name, sinks)
+	msg := fmt.Sprintf("{\"level\": \"%s\", \"sinks\": %s}", l.level.Name, sinks)
 	return []byte(msg), nil
 }
 
-func (x *BaseLogger) active(level LogLevel) bool {
-	if x.level.Priority >= level.Priority {
-		return true
-	}
-
-	return false
+func (l Logger) Fatal(m string) {
+	l.Log(LOG_FATAL, m, nil)
 }
 
-// For testing
-func NumLogger() int {
-	return len(loggers)
+func (l Logger) Error(m string) {
+	l.Log(LOG_ERROR, m, nil)
+}
+
+func (l Logger) Warn(m string) {
+	l.Log(LOG_WARN, m, nil)
+}
+
+func (l Logger) Info(m string) {
+	l.Log(LOG_INFO, m, nil)
+}
+
+func (l Logger) Debug(m string) {
+	l.Log(LOG_DEBUG, m, nil)
+}
+
+func (l Logger) Debug1(m string) {
+	l.Log(LOG_DEBUG1, m, nil)
+}
+
+func (l Logger) Debug2(m string) {
+	l.Log(LOG_DEBUG2, m, nil)
+}
+
+func (l Logger) Fatald(d map[string]interface{}, m string) {
+	l.Log(LOG_FATAL, m, d)
+}
+
+func (l Logger) Errord(d map[string]interface{}, m string) {
+	l.Log(LOG_ERROR, m, d)
+}
+
+func (l Logger) Warnd(d map[string]interface{}, m string) {
+	l.Log(LOG_WARN, m, d)
+}
+
+func (l Logger) Infod(d map[string]interface{}, m string) {
+	l.Log(LOG_INFO, m, d)
+}
+
+func (l Logger) Debugd(d map[string]interface{}, m string) {
+	l.Log(LOG_DEBUG, m, d)
+}
+
+func (l Logger) Debug1d(d map[string]interface{}, m string) {
+	l.Log(LOG_DEBUG1, m, d)
+}
+
+func (l Logger) Debug2d(d map[string]interface{}, m string) {
+	l.Log(LOG_DEBUG2, m, d)
+}
+
+func (l Logger) Fatalf(f string, a ...interface{}) {
+	l.Log(LOG_FATAL, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Errorf(f string, a ...interface{}) {
+	l.Log(LOG_ERROR, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Warnf(f string, a ...interface{}) {
+	l.Log(LOG_WARN, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Infof(f string, a ...interface{}) {
+	l.Log(LOG_INFO, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Debugf(f string, a ...interface{}) {
+	l.Log(LOG_DEBUG, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Debug1f(f string, a ...interface{}) {
+	l.Log(LOG_DEBUG1, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Debug2f(f string, a ...interface{}) {
+	l.Log(LOG_DEBUG2, fmt.Sprintf(f, a...), nil)
+}
+
+func (l Logger) Fataldf(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_FATAL, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Errordf(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_ERROR, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Warndf(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_WARN, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Infodf(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_INFO, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Debugdf(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_DEBUG, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Debug1df(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_DEBUG1, fmt.Sprintf(f, a...), d)
+}
+
+func (l Logger) Debug2df(d map[string]interface{}, f string, a ...interface{}) {
+	l.Log(LOG_DEBUG2, fmt.Sprintf(f, a...), d)
 }

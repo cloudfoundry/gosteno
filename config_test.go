@@ -14,7 +14,8 @@ func (s *ConfigSuite) TestReInitLevel(c *C) {
 
 	for _, level := range levels {
 		Init(&Config{Level: level})
-		logger := NewLogger("reinit").(*BaseLogger)
-		c.Assert(logger.level, Equals, level)
+
+		l := NewLogger("reinit")
+		c.Assert(l.Level(), Equals, level)
 	}
 }
