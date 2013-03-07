@@ -95,7 +95,7 @@ func encodeMethod(method string) string {
 	return fmt.Sprintf("%s ", method[index+1:])
 }
 
-func encodeData(data map[string]string) (string, error) {
+func encodeData(data map[string]interface{}) (string, error) {
 	b, err := json.Marshal(data)
 	return fmt.Sprintf("%s ", string(b)), err
 }

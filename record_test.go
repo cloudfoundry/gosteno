@@ -10,7 +10,7 @@ var _ = Suite(&RecordSuite{})
 
 func (s *RecordSuite) TestNewRecordWithLOC(c *C) {
 	config.EnableLOC = true
-	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
+	r := NewRecord("source", LOG_INFO, "hello", nil)
 	config.EnableLOC = false
 
 	c.Check(r.File, Matches, ".*record_test.go$")
@@ -19,7 +19,7 @@ func (s *RecordSuite) TestNewRecordWithLOC(c *C) {
 }
 
 func (s *RecordSuite) TestNewRecordWithoutLOC(c *C) {
-	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
+	r := NewRecord("source", LOG_INFO, "hello", nil)
 
 	c.Check(r.File, Equals, "")
 	c.Check(r.Line, Equals, 0)
@@ -27,7 +27,7 @@ func (s *RecordSuite) TestNewRecordWithoutLOC(c *C) {
 }
 
 func (s *RecordSuite) TestRecordPid(c *C) {
-	r := NewRecord("source", LOG_INFO, "hello", map[string]string{})
+	r := NewRecord("source", LOG_INFO, "hello", nil)
 
 	c.Check(r.Pid, Not(Equals), 0)
 }

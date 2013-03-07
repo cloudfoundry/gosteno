@@ -66,7 +66,7 @@ func (s *LoggerSuite) TestPanic(c *C) {
 	c.Assert(func() { logger.Fatal("fail!") }, PanicMatches, "fail!")
 	c.Assert(func() { logger.Fatalf("fail!%s", "fail!") }, PanicMatches, "fail!fail!")
 
-	t := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
+	t := NewTaggedLogger(logger, map[string]interface{}{"foo": "bar"})
 	c.Assert(func() { t.Fatal("panic") }, PanicMatches, "panic")
 	c.Assert(func() { t.Fatalf("panic!%s", "panic!") }, PanicMatches, "panic!panic!")
 }

@@ -12,7 +12,7 @@ type JsonCodecSuite struct {
 var _ = Suite(&JsonCodecSuite{})
 
 func (s *JsonCodecSuite) TestJsonCodec(c *C) {
-	r := NewRecord("source", LOG_INFO, "Hello world", map[string]string{})
+	r := NewRecord("source", LOG_INFO, "Hello world", nil)
 	m, err := s.EncodeRecord(r)
 	c.Assert(err, IsNil)
 

@@ -19,7 +19,7 @@ func (s *IOSinkSuite) TestAddRecord(c *C) {
 	sink.SetCodec(NewJsonCodec())
 
 	go func(msg string) {
-		record := NewRecord("source", LOG_INFO, msg, map[string]string{})
+		record := NewRecord("source", LOG_INFO, msg, nil)
 		sink.AddRecord(record)
 		sink.Flush()
 		pWriter.Close()

@@ -18,7 +18,7 @@ func (s *JsonPrettifierSuite) TestConst(c *C) {
 }
 
 func (s *JsonPrettifierSuite) TestConstOrder(c *C) {
-	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]interface{}{"foo": "bar"})
 
 	prettifier1 := NewJsonPrettifier(EXCLUDE_FILE | EXCLUDE_DATA)
 	bytes1, _ := prettifier1.EncodeRecord(record)
@@ -31,7 +31,7 @@ func (s *JsonPrettifierSuite) TestConstOrder(c *C) {
 
 func (s *JsonPrettifierSuite) TestEncodeRecord(c *C) {
 	config.EnableLOC = true
-	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]interface{}{"foo": "bar"})
 	config.EnableLOC = false
 	l := record.Line
 
@@ -46,7 +46,7 @@ func (s *JsonPrettifierSuite) TestEncodeRecord(c *C) {
 
 func (s *JsonPrettifierSuite) TestExclude(c *C) {
 	config.EnableLOC = true
-	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]interface{}{"foo": "bar"})
 	config.EnableLOC = false
 
 	prettifier := NewJsonPrettifier(EXCLUDE_DATA | EXCLUDE_LINE)
@@ -59,7 +59,7 @@ func (s *JsonPrettifierSuite) TestExclude(c *C) {
 
 func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
 	config.EnableLOC = true
-	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]string{"foo": "bar"})
+	record := NewRecord("source", LOG_INFO, "Hello, world", map[string]interface{}{"foo": "bar"})
 	config.EnableLOC = false
 	l := record.Line
 	t := record.Timestamp

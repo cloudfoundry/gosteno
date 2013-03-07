@@ -9,7 +9,8 @@ import (
 type Logger interface {
 	json.Marshaler
 
-	Log(level LogLevel, m string, data map[string]string)
+	Log(level LogLevel, m string, d map[string]interface{})
+
 	Fatal(m string)
 	Error(m string)
 	Warn(m string)
@@ -33,12 +34,12 @@ type BaseLogger struct {
 	level LogLevel
 }
 
-func (x *BaseLogger) Log(l LogLevel, m string, data map[string]string) {
+func (x *BaseLogger) Log(l LogLevel, m string, d map[string]interface{}) {
 	if !x.active(l) {
 		return
 	}
 
-	record := NewRecord(x.name, l, m, data)
+	record := NewRecord(x.name, l, m, d)
 
 	for _, sink := range x.sinks {
 		sink.AddRecord(record)

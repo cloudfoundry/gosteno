@@ -38,7 +38,7 @@ func BenchmarkTaggedLoggerInDevNullSink(b *testing.B) {
 		Sinks: []Sink{NewFileSink("/dev/null")},
 	})
 	loggers = make(map[string]*BaseLogger)
-	tags := map[string]string{
+	tags := map[string]interface{}{
 		"thread_id":    "1234",
 		"program_name": "benchmark",
 	}

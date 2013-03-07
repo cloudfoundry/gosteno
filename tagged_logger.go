@@ -7,34 +7,35 @@ import (
 
 type TaggedLogger struct {
 	proxyLogger Logger
-	data        map[string]string
+	d           map[string]interface{}
 }
 
-// tagged logger doesn't have name, so far
-func NewTaggedLogger(logger Logger, data map[string]string) Logger {
+func NewTaggedLogger(l Logger, d map[string]interface{}) Logger {
 	taggedLogger := new(TaggedLogger)
 
-	taggedLogger.proxyLogger = logger
-	taggedLogger.data = data
+	taggedLogger.proxyLogger = l
+	taggedLogger.d = d
 
 	return taggedLogger
 }
 
-func (x *TaggedLogger) Log(l LogLevel, m string, data map[string]string) {
-	if data != nil {
-		d := make(map[string]string)
+func (x *TaggedLogger) Log(l LogLevel, m string, d map[string]interface{}) {
+	if d != nil {
+		e := make(map[string]interface{})
 
-		// data will cover userData if key is the same
-		for k, v := range x.data {
-			d[k] = v
-		}
-		for k, v := range data {
-			d[k] = v
+		// Copy the logger's data
+		for k, v := range x.d {
+			e[k] = v
 		}
 
-		x.proxyLogger.Log(l, m, d)
+		// Overwrite specified data
+		for k, v := range d {
+			e[k] = v
+		}
+
+		x.proxyLogger.Log(l, m, e)
 	} else {
-		x.proxyLogger.Log(l, m, x.data)
+		x.proxyLogger.Log(l, m, x.d)
 	}
 }
 
@@ -96,7 +97,7 @@ func (x *TaggedLogger) Debug2f(f string, a ...interface{}) {
 }
 
 func (x *TaggedLogger) MarshalJSON() ([]byte, error) {
-	data, _ := json.Marshal(x.data)
+	data, _ := json.Marshal(x.d)
 	proxy, _ := json.Marshal(x.proxyLogger)
 
 	msg := fmt.Sprintf("{\"data\": %s, \"proxy\": %s}", data, proxy)

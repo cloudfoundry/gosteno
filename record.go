@@ -8,15 +8,15 @@ import (
 )
 
 type Record struct {
-	Timestamp float64           `json:"timestamp"`
-	Pid       int               `json:"process_id"`
-	Source    string            `json:"source"`
-	Level     LogLevel          `json:"log_level"`
-	Message   string            `json:"message"`
-	Data      map[string]string `json:"data"`
-	File      string            `json:"file"`
-	Line      int               `json:"line"`
-	Method    string            `json:"method"`
+	Timestamp float64                `json:"timestamp"`
+	Pid       int                    `json:"process_id"`
+	Source    string                 `json:"source"`
+	Level     LogLevel               `json:"log_level"`
+	Message   string                 `json:"message"`
+	Data      map[string]interface{} `json:"data"`
+	File      string                 `json:"file"`
+	Line      int                    `json:"line"`
+	Method    string                 `json:"method"`
 }
 
 var pid int
@@ -25,7 +25,7 @@ func init() {
 	pid = os.Getpid()
 }
 
-func NewRecord(s string, l LogLevel, m string, d map[string]string) *Record {
+func NewRecord(s string, l LogLevel, m string, d map[string]interface{}) *Record {
 	r := &Record{
 		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
 		Pid:       pid,

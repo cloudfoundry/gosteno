@@ -30,7 +30,7 @@ func (s *TaggedLoggerSuite) TearDownTest(c *C) {
 
 func (s *TaggedLoggerSuite) TestNewTaggedLogger(c *C) {
 	logger := NewLogger("foobar")
-	taggedLogger := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
+	taggedLogger := NewTaggedLogger(logger, map[string]interface{}{"foo": "bar"})
 	taggedLogger.Info("Hello")
 	taggedLogger.Debug("World")
 	// the level of tagged logger should be the same as the derived logger
@@ -39,7 +39,7 @@ func (s *TaggedLoggerSuite) TestNewTaggedLogger(c *C) {
 
 func (s *TaggedLoggerSuite) TestTaggedLogger(c *C) {
 	logger := NewLogger("foobar")
-	taggedLogger := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
+	taggedLogger := NewTaggedLogger(logger, map[string]interface{}{"foo": "bar"})
 	taggedLogger.Info("Hello")
 	bytes, _ := config.Codec.EncodeRecord(s.nSink.records[0])
 	c.Assert(string(bytes), Matches, `{.*"foo":"bar".*}`)
@@ -47,8 +47,8 @@ func (s *TaggedLoggerSuite) TestTaggedLogger(c *C) {
 
 func (s *TaggedLoggerSuite) TestTaggedLogger2(c *C) {
 	logger := NewLogger("whatever")
-	taggedLogger := NewTaggedLogger(logger, map[string]string{"foo": "bar"})
-	taggedLogger2 := NewTaggedLogger(taggedLogger, map[string]string{"oof": "rab"})
+	taggedLogger := NewTaggedLogger(logger, map[string]interface{}{"foo": "bar"})
+	taggedLogger2 := NewTaggedLogger(taggedLogger, map[string]interface{}{"oof": "rab"})
 	taggedLogger2.Info("Hello")
 	c.Assert(s.nSink.records, HasLen, 1)
 
