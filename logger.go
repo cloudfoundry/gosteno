@@ -21,16 +21,12 @@ type BaseLogger struct {
 	level LogLevel
 }
 
-func (l *BaseLogger) active(x LogLevel) bool {
-	return l.level.Priority >= x.Priority
-}
-
 func (l *BaseLogger) Level() LogLevel {
 	return l.level
 }
 
 func (l *BaseLogger) Log(x LogLevel, m string, d map[string]interface{}) {
-	if !l.active(x) {
+	if l.Level().Priority < x.Priority {
 		return
 	}
 
