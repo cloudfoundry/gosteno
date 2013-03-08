@@ -38,7 +38,7 @@ func Init(c *Config) {
 	}
 }
 
-func NewLogger(name string) Logger {
+func NewLogger(name string) *Logger {
 	loggersMutex.Lock()
 	defer loggersMutex.Unlock()
 
@@ -54,7 +54,7 @@ func NewLogger(name string) Logger {
 		l = bl
 	}
 
-	return Logger{l}
+	return &Logger{L: l}
 }
 
 func loggersInJson() string {

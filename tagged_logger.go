@@ -1,18 +1,18 @@
 package steno
 
 type TaggedLogger struct {
-	Logger
+	*Logger
 
 	d map[string]interface{}
 }
 
-func NewTaggedLogger(l Logger, d map[string]interface{}) Logger {
+func NewTaggedLogger(l *Logger, d map[string]interface{}) *Logger {
 	tl := &TaggedLogger{
 		Logger: l,
 		d:      d,
 	}
 
-	return Logger{tl}
+	return &Logger{L: tl}
 }
 
 func (l *TaggedLogger) Log(x LogLevel, m string, d map[string]interface{}) {

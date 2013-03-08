@@ -47,7 +47,7 @@ func BenchmarkTaggedLoggerInDevNullSink(b *testing.B) {
 	performBenchmark(logger, b)
 }
 
-func performBenchmark(logger Logger, b *testing.B) {
+func performBenchmark(logger *Logger, b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Fatal("Hello, world.")

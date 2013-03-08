@@ -76,15 +76,69 @@ func (s *LoggerSuite) TestLevelVisibility(c *C) {
 func (s *LoggerSuite) TestCreatingDupLogger(c *C) {
 	logger1 := NewLogger("foobar")
 	logger2 := NewLogger("foobar")
-	c.Assert(logger1, Equals, logger2)
+	c.Assert(logger1, DeepEquals, logger2)
 }
 
 func (s *LoggerSuite) TestPanic(c *C) {
 	logger := NewLogger("foobar")
 	c.Assert(func() { logger.Fatal("fail!") }, PanicMatches, "fail!")
 	c.Assert(func() { logger.Fatalf("fail!%s", "fail!") }, PanicMatches, "fail!fail!")
+}
 
-	t := NewTaggedLogger(logger, map[string]interface{}{"foo": "bar"})
-	c.Assert(func() { t.Fatal("panic") }, PanicMatches, "panic")
-	c.Assert(func() { t.Fatalf("panic!%s", "panic!") }, PanicMatches, "panic!panic!")
+var logWithDataExamples = []struct {
+	A, B, R map[string]interface{}
+}{
+	{
+		A: map[string]interface{}{"foo": "bar"},
+		B: nil,
+		R: map[string]interface{}{"foo": "bar"},
+	},
+	{
+		A: nil,
+		B: map[string]interface{}{"foo": "bar"},
+		R: map[string]interface{}{"foo": "bar"},
+	},
+	{
+		A: map[string]interface{}{"foo": "qux"},
+		B: map[string]interface{}{"foo": "bar"},
+		R: map[string]interface{}{"foo": "bar"},
+	},
+	{
+		A: map[string]interface{}{"foo": "qux", "baz": "zap"},
+		B: map[string]interface{}{"foo": "bar"},
+		R: map[string]interface{}{"foo": "bar", "baz": "zap"},
+	},
+}
+
+func (s *LoggerSuite) TestLogWithData(c *C) {
+	for _, e := range logWithDataExamples {
+		n := newNullSink()
+		l := NewLogger("logger")
+		l.L.(*BaseLogger).sinks = []Sink{n}
+
+		l.d = e.A
+		l.Log(LOG_INFO, "message", e.B)
+
+		c.Check(n.records[0].Data, DeepEquals, e.R)
+	}
+}
+
+func (s *LoggerSuite) TestLoggerSetGet(c *C) {
+	l := NewLogger("logger")
+	l.Set("key", "value")
+	c.Check(l.Get("key"), Equals, "value")
+}
+
+func (s *LoggerSuite) TestLoggerCopy(c *C) {
+	x := NewLogger("logger")
+	x.Set("key", "value")
+
+	y := x.Copy()
+	c.Check(y.Get("key"), Equals, "value")
+
+	y.Set("key", "other_value")
+	c.Check(y.Get("key"), Equals, "other_value")
+
+	// The original logger should be left unchanged
+	c.Check(x.Get("key"), Equals, "value")
 }
