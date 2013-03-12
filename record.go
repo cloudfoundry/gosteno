@@ -21,9 +21,9 @@ type Record struct {
 	Level     LogLevel               `json:"log_level"`
 	Message   string                 `json:"message"`
 	Data      map[string]interface{} `json:"data"`
-	File      string                 `json:"file"`
-	Line      int                    `json:"line"`
-	Method    string                 `json:"method"`
+	File      string                 `json:"file,omitempty"`
+	Line      int                    `json:"line,omitempty"`
+	Method    string                 `json:"method,omitempty"`
 }
 
 var pid int

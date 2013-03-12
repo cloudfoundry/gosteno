@@ -27,9 +27,6 @@ func (s *JsonCodecSuite) TestJsonCodec(c *C) {
 		"log_level",
 		"message",
 		"data",
-		"file",
-		"line",
-		"method",
 	}
 
 	for _, f := range fields {
@@ -42,4 +39,13 @@ func (s *JsonCodecSuite) TestTimestampIsFormattedAsFloat(c *C) {
 	m, err := s.EncodeRecord(r)
 	c.Assert(err, IsNil)
 	c.Assert(string(m), Matches, `.*"timestamp":\d{10}\.\d{9},.*`)
+}
+
+func (s *JsonCodecSuite) TestEmptyFileLineMethodNotIncluded(c *C) {
+	r := NewRecord("source", LOG_INFO, "Hello world", nil)
+	m, err := s.EncodeRecord(r)
+	c.Assert(err, IsNil)
+	c.Check(string(m), Not(Matches), `.*"file":.*`)
+	c.Check(string(m), Not(Matches), `.*"line":.*`)
+	c.Check(string(m), Not(Matches), `.*"method":.*`)
 }
