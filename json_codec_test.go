@@ -36,3 +36,10 @@ func (s *JsonCodecSuite) TestJsonCodec(c *C) {
 		c.Check(string(m), Matches, fmt.Sprintf(`{.*"%s":.*}`, f))
 	}
 }
+
+func (s *JsonCodecSuite) TestTimestampIsFormattedAsFloat(c *C) {
+	r := NewRecord("source", LOG_INFO, "Hello world", nil)
+	m, err := s.EncodeRecord(r)
+	c.Assert(err, IsNil)
+	c.Assert(string(m), Matches, `.*"timestamp":\d{10}\.\d{9},.*`)
+}

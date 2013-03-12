@@ -76,7 +76,7 @@ func encodeLevel(level LogLevel) string {
 	return fmt.Sprintf("%s ", strings.ToUpper(level.String()))
 }
 
-func encodeTimestamp(t float64) string {
+func encodeTimestamp(t RecordTimestamp) string {
 	ut := time.Unix(int64(t), 0)
 	return fmt.Sprintf("%s ", ut.Format("2006-01-02 15:04:05"))
 }

@@ -1,14 +1,21 @@
 package steno
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"strings"
 	"time"
 )
 
+type RecordTimestamp float64
+
+func (t RecordTimestamp) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%.9f", t)), nil
+}
+
 type Record struct {
-	Timestamp float64                `json:"timestamp"`
+	Timestamp RecordTimestamp        `json:"timestamp"`
 	Pid       int                    `json:"process_id"`
 	Source    string                 `json:"source"`
 	Level     LogLevel               `json:"log_level"`
@@ -27,7 +34,7 @@ func init() {
 
 func NewRecord(s string, l LogLevel, m string, d map[string]interface{}) *Record {
 	r := &Record{
-		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
+		Timestamp: RecordTimestamp(time.Now().UnixNano()) / 1000000000,
 		Pid:       pid,
 		Source:    s,
 		Level:     l,
