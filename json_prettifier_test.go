@@ -79,7 +79,7 @@ func (s *JsonPrettifierSuite) TestDecodeLogEntry(c *C) {
 	c.Assert(record.Data["foo"], Equals, "bar")
 
 	// test err with invalid log level
-	entry = `{"Message":"hi","Level":"enoent"}`
+	entry = `{"Message":"hi","Log_Level":"enoent"}`
 	record, err = prettifier.DecodeJsonLogEntry(entry)
 
 	c.Assert(err, NotNil)
