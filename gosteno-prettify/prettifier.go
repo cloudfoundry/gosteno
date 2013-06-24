@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	steno "github.com/cloudfoundry/gosteno"
+	"github.com/cloudfoundry/gosteno"
 	"io"
 	"os"
 	"strings"
@@ -78,7 +78,7 @@ func prettifyFromFile(logFile string) error {
 }
 
 func main() {
-	excludedFields := steno.EXCLUDE_NONE
+	excludedFields := gosteno.EXCLUDE_NONE
 
 	h := flag.Bool("h", false, "Show help")
 	a := flag.Bool("a", false, "Omit location and data in order to provide well-aligned logs")
@@ -95,13 +95,13 @@ func main() {
 		return
 	}
 	if *a {
-		excludedFields |= steno.EXCLUDE_FILE | steno.EXCLUDE_LINE | steno.EXCLUDE_METHOD | steno.EXCLUDE_DATA
+		excludedFields |= gosteno.EXCLUDE_FILE | gosteno.EXCLUDE_LINE | gosteno.EXCLUDE_METHOD | gosteno.EXCLUDE_DATA
 	}
 	if *s {
 		ignoreParseError = true
 	}
 
-	prettifier = steno.NewJsonPrettifier(excludedFields)
+	prettifier = gosteno.NewJsonPrettifier(excludedFields)
 
 	args := flag.Args()
 	if len(args) > 0 {

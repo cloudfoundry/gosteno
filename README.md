@@ -47,25 +47,25 @@ codec, tagging the information.
     package main
 
     import (
-        steno "github.com/cloudfoundry/gosteno"
+        "github.com/cloudfoundry/gosteno"
         "os"
     )
 
     func main() {
-        c := &steno.Config{
-            Sinks: []steno.Sink{
-                steno.NewFileSink("./a.log"),
-                steno.NewIOSink(os.Stdout),
-                steno.NewSyslogSink("foobar"),
+        c := &gosteno.Config{
+            Sinks: []gosteno.Sink{
+                gosteno.NewFileSink("./a.log"),
+                gosteno.NewIOSink(os.Stdout),
+                gosteno.NewSyslogSink("foobar"),
             },
-            Level:     steno.LOG_INFO,
-            Codec:     steno.NewJsonCodec(),
+            Level:     gosteno.LOG_INFO,
+            Codec:     gosteno.NewJsonCodec(),
             Port:      8080,
             EnableLOC: true,
         }
-        steno.Init(c)
-        logger := steno.NewLogger("test")
-        t := steno.NewTaggedLogger(logger, map[string]string{"foo": "bar", "hello": "world"})
+        gosteno.Init(c)
+        logger := gosteno.NewLogger("test")
+        t := gosteno.NewTaggedLogger(logger, map[string]string{"foo": "bar", "hello": "world"})
         t.Info("Hello")
     }
 
