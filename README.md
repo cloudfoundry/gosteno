@@ -60,7 +60,6 @@ codec, tagging the information.
             },
             Level:     gosteno.LOG_INFO,
             Codec:     gosteno.NewJsonCodec(),
-            Port:      8080,
             EnableLOC: true,
         }
         gosteno.Init(c)
