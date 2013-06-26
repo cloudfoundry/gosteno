@@ -1,7 +1,7 @@
 package steno
 
 import (
-	"log/syslog"
+	syslog "github.com/cloudfoundry/gosteno/syslog"
 	"sync"
 )
 
