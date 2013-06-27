@@ -1,4 +1,4 @@
-package steno
+package gosteno
 
 type Sink interface {
 	AddRecord(record *Record)

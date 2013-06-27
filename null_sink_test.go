@@ -1,4 +1,4 @@
-package steno
+package gosteno
 
 type nullSink struct {
 	records []*Record

@@ -1,4 +1,4 @@
-package steno
+package gosteno
 
 type Config struct {
 	Sinks     []Sink

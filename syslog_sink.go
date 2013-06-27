@@ -1,4 +1,4 @@
-package steno
+package gosteno
 
 import (
 	syslog "github.com/cloudfoundry/gosteno/syslog"
