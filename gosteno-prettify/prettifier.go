@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var prettifier *steno.JsonPrettifier
+var prettifier *gosteno.JsonPrettifier
 
 var ignoreParseError = false
 var helptext = `Usage: gosteno-prettify [OPTS] [FILE(s)]
