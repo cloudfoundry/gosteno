@@ -5,7 +5,10 @@ import (
 	"sync"
 )
 
-const MaxMessageSize = 1024 * 3
+const (
+	MaxMessageSize  = 1024 * 3
+	TruncatePostfix = "..."
+)
 
 type Syslog struct {
 	writer *syslog.Writer
@@ -73,5 +76,5 @@ func truncate(record *Record) {
 		return
 	}
 
-	record.Message = record.Message[:MaxMessageSize] + "..."
+	record.Message = record.Message[:MaxMessageSize-len(TruncatePostfix)] + TruncatePostfix
 }
