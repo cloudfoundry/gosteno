@@ -25,8 +25,8 @@ func (s *SyslogSinkSuite) TestTruncate(c *C) {
 		Message: msg2,
 	}
 	truncate(record2)
-	c.Check(len(record2.Message), Equals, MaxMessageSize+len("..."))
-	c.Check(record2.Message[:MaxMessageSize], Equals, msg2[:MaxMessageSize])
+	c.Check(len(record2.Message), Equals, MaxMessageSize)
+	c.Check(record2.Message[:MaxMessageSize-3], Equals, msg2[:MaxMessageSize-3])
 	c.Check(strings.HasSuffix(record2.Message, "..."), Equals, true)
 }
 
