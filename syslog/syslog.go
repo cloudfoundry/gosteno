@@ -15,6 +15,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 )
 
 type Priority int
@@ -137,28 +138,24 @@ func (w *Writer) Debug(m string) (err error) {
 	return err
 }
 
+func (n netConn) writeString(p Priority, prefix string, s string) (int, error) {
+	return n.writeBytes(p, prefix, []byte(s))
+}
+
 func (n netConn) writeBytes(p Priority, prefix string, b []byte) (int, error) {
 	nl := ""
 	if len(b) == 0 || b[len(b)-1] != '\n' {
 		nl = "\n"
 	}
+
+	n.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+
 	_, err := fmt.Fprintf(n.conn, "<%d>%s: %s%s", p, prefix, b, nl)
 	if err != nil {
 		return 0, err
 	}
-	return len(b), nil
-}
 
-func (n netConn) writeString(p Priority, prefix string, s string) (int, error) {
-	nl := ""
-	if len(s) == 0 || s[len(s)-1] != '\n' {
-		nl = "\n"
-	}
-	_, err := fmt.Fprintf(n.conn, "<%d>%s: %s%s", p, prefix, s, nl)
-	if err != nil {
-		return 0, err
-	}
-	return len(s), nil
+	return len(b), nil
 }
 
 func (n netConn) close() error {

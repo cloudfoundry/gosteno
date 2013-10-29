@@ -8,8 +8,11 @@ package syslog
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"path"
 	"testing"
 	"time"
 )
@@ -125,5 +128,51 @@ func TestWrite(t *testing.T) {
 		if rcvd != test.exp {
 			t.Fatalf("s.Info() = '%q', but wanted '%q'", rcvd, test.exp)
 		}
+	}
+}
+
+func TestWriteTimesOut(t *testing.T) {
+	tmpdir, err := ioutil.TempDir(os.TempDir(), "write-timeout-test")
+	if err != nil {
+		t.Fatalf("ioutil.TempFile() failed: %s", err)
+	}
+
+	socketFile := path.Join(tmpdir, "test.sock")
+
+	_, err = net.Listen("unix", socketFile)
+	if err != nil {
+		t.Fatalf("net.Listen() failed to listen on socket: %s", err)
+	}
+
+	l, err := Dial("unix", socketFile, LOG_INFO, "syslog_test")
+
+	if err != nil {
+		t.Fatalf("syslog.Dial() failed: %s", err)
+	}
+
+	firstFailure := make(chan error)
+
+	go func() {
+		for {
+			_, err = io.WriteString(l, "timing out")
+			if err != nil {
+				firstFailure <- err
+				break
+			}
+		}
+	}()
+
+	select {
+	case err := <-firstFailure:
+		switch err.(type) {
+		case *net.OpError:
+			if !err.(*net.OpError).Timeout() {
+				t.Fatalf("WriteString() error = '%#v', but wanted a timeout error", err)
+			}
+		default:
+			t.Fatalf("WriteString() error = '%#v', but wanted a timeout error", err)
+		}
+	case <-time.After(10 * time.Second):
+		t.Fatalf("WriteString() never returned an error")
 	}
 }
