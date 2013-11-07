@@ -8,9 +8,8 @@ matrix:
     - go: tip
 
 install:
-  - gem install nats --pre
   - go get -v ./...
-  - go get lanchpad.net/gocheck
+  - go get launchpad.net/gocheck
   - go build -v ./...
 
 script: go test -v ./...
