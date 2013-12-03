@@ -1,4 +1,4 @@
-# Gosteno
+# Gosteno [![Build Status](https://travis-ci.org/cloudfoundry/gosteno.png?branch=master)](https://travis-ci.org/cloudfoundry/gosteno)
 
 Gosteno is a golang implementation of the
 [steno log tool](https://github.com/cloudfoundry/steno).  The feature set of
