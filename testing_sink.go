@@ -4,6 +4,14 @@ type TestingSink struct {
 	Records []*Record
 }
 
+func EnterTestMode() {
+	testSink := NewTestingSink()
+	stenoConfig := Config{
+		Sinks: []Sink{testSink},
+	}
+	Init(&stenoConfig)
+}
+
 func NewTestingSink() *TestingSink {
 	return &TestingSink{
 		Records: make([]*Record, 0, 10),
