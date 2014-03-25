@@ -6,7 +6,7 @@ import (
 )
 
 // Global configs
-var config *Config
+var config Config
 
 // loggersMutex protects accesses to loggers and regexp
 var loggersMutex = &sync.Mutex{}
@@ -20,8 +20,6 @@ var loggers = make(map[string]*BaseLogger)
 func Init(c *Config) {
 	loggersMutex.Lock()
 	defer loggersMutex.Unlock()
-
-	setConfig(c)
 
 	if c.Level == (LogLevel{}) {
 		c.Level = LOG_INFO
@@ -40,6 +38,8 @@ func Init(c *Config) {
 			sink.SetCodec(c.Codec)
 		}
 	}
+
+	setConfig(*c)
 
 	for name, _ := range loggers {
 		loggers[name] = nil
@@ -69,10 +69,10 @@ func getConfig() Config {
 	configMutex.RLock()
 	defer configMutex.RUnlock()
 
-	return *config
+	return config
 }
 
-func setConfig(newConfig *Config) {
+func setConfig(newConfig Config) {
 	configMutex.Lock()
 	defer configMutex.Unlock()
 
